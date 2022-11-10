@@ -19,7 +19,7 @@ class aclient(discord.Client):
     async def on_ready(self):
         await self.wait_until_ready()
         if not self.synced:
-            await tree.sync(guild=syncguild)
+            await tree.sync()
             self.synced = True
         print(f"Logged in as {self.user}")
 
@@ -59,12 +59,7 @@ async def on_message(message):
 
 
 # Slash commands:
-@tree.command(name="test", description="A test slash command", guild=syncguild)
-async def self(interaction: discord.Interaction):
-    await interaction.response.send_message(f"Hello {interaction.user.mention}!")
-
-
-@tree.command(name="version", description="Slash command for Cloe's version.", guild=syncguild)
+@tree.command(name="version", description="Slash command for Cloe's version.")
 async def self(interaction: discord.Interaction):
     await interaction.response.send_message(
         content=f"{interaction.user.mention}, this is the Cloe 2.0 alpha version. My features are as follows: \n \n **Saying hello.**",
