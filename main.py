@@ -30,9 +30,8 @@ tree = app_commands.CommandTree(client)
 
 @client.event
 async def on_member_join(member):
-    print("Member joined")
-    dm = await client.create_dm(user=member)
-    await dm.send(f"Welcome to **{member.guild.name}**!")
+    channel = discord.utils.get(member.guild.channels, name="welcome")
+    await channel.send(f"Welcome to the server {member.mention}!")
 
 @client.event
 async def on_message(message):
