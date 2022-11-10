@@ -32,6 +32,15 @@ tree = app_commands.CommandTree(client)
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.channels, name="welcome")
     await channel.send(f"Welcome to the server {member.mention}!")
+    role = discord.utils.get(member.guild.roles, name="Player")
+    await member.add_roles(role)
+
+
+@client.event
+async def on_member_remove(member):
+    channel = discord.utils.get(member.guild.channels, name="welcome")
+    await channel.send(f"Goodbye {member.mention} :(")
+
 
 @client.event
 async def on_message(message):
@@ -41,7 +50,8 @@ async def on_message(message):
     if message.content.lower().startswith(f"hello <@{client.user.id}>"):
         await message.channel.send(f"Hello {message.author.mention}!")
 
-    elif message.content.lower().startswith(f"i love you <@{client.user.id}>") or message.content.lower().startswith(f"love you <@{client.user.id}>"):
+    elif message.content.lower().startswith(f"i love you <@{client.user.id}>") or message.content.lower().startswith(
+            f"love you <@{client.user.id}>"):
         await message.channel.send(f"I love you too {message.author.mention}!")
 
 
@@ -53,7 +63,9 @@ async def self(interaction: discord.Interaction):
 
 @tree.command(name="version", description="Slash command for Cloe's version.", guild=syncguild)
 async def self(interaction: discord.Interaction):
-    await interaction.response.send_message(content=f"{interaction.user.mention}, this is the Cloe 2.0 alpha version. My features are as follows: \n \n **Saying hello.**", ephemeral=True)
+    await interaction.response.send_message(
+        content=f"{interaction.user.mention}, this is the Cloe 2.0 alpha version. My features are as follows: \n \n **Saying hello.**",
+        ephemeral=True)
 
 
 def grabtoken():
@@ -61,5 +73,6 @@ def grabtoken():
     if token:
         print('Token grabbed, Staring bot.')
         client.run(token.read())
+
 
 grabtoken()
