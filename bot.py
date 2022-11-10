@@ -62,7 +62,10 @@ async def on_message(message):
 @tree.command(name="version", description="Slash command for Cloe's version.")
 async def self(interaction: discord.Interaction):
     await interaction.response.send_message(
-        content=f"{interaction.user.mention}, this is the Cloe 2.0 alpha version. My features are as follows: \n \n **Saying hello.**",
+        content=f"""{interaction.user.mention}, this is the 2.0 version of Cloe. My features are as follows:
+        **Saying hello.** 
+        **Welcoming people to the server.**
+        **Auto adding people to the 'Player' role.**""",
         ephemeral=True)
 
 
