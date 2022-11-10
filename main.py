@@ -41,6 +41,9 @@ async def on_message(message):
     if message.content.lower().startswith(f"hello <@{client.user.id}>"):
         await message.channel.send(f"Hello {message.author.mention}!")
 
+    elif message.content.lower().startswith(f"i love you <@{client.user.id}>") or message.content.lower().startswith(f"love you <@{client.user.id}>"):
+        await message.channel.send(f"I love you too {message.author.mention}!")
+
 
 # Slash commands:
 @tree.command(name="test", description="A test slash command", guild=syncguild)
