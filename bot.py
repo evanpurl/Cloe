@@ -1,5 +1,8 @@
 import discord
 from discord import app_commands
+from mysql.connector import Error, MySQLConnection
+from python_mysql_dbconfig import read_db_config
+from database import insert_user
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -8,6 +11,30 @@ intents.members = True
 activity = discord.Activity(name='Your every move', type=discord.ActivityType.watching)
 
 syncguild = discord.Object(id=766120148826193942)
+
+
+def connect():
+    """ Connect to MySQL database """
+
+    db_config = read_db_config()
+    conn = None
+    try:
+        print('Connecting to MySQL database...')
+        conn = MySQLConnection(**db_config)
+
+        if conn.is_connected():
+            print('Connection established.')
+        else:
+            print('Connection failed.')
+
+    except Error as error:
+        print("error")
+        print(error)
+
+    finally:
+        if conn is not None and conn.is_connected():
+            conn.close()
+            print('Connection closed.')
 
 
 class aclient(discord.Client):
@@ -21,6 +48,8 @@ class aclient(discord.Client):
         if not self.synced:
             await tree.sync()
             self.synced = True
+        connect()
+
         print(f"Logged in as {self.user}")
 
 
@@ -67,6 +96,19 @@ async def self(interaction: discord.Interaction):
         **Welcoming people to the server.**
         **Auto adding people to the 'Player' role.**""",
         ephemeral=True)
+
+
+@tree.command(name="recordinfo", description="database test")
+async def self(interaction: discord.Interaction):
+    try:
+        print(f"{interaction.user.id} {interaction.user.name} {interaction.user.discriminator}")
+        insert_user(interaction.user.id, interaction.user.name, interaction.user.discriminator)
+        await interaction.response.send_message(content="Recorded", ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content="Something went wrong!", ephemeral=True)
+
+
 
 
 def grabtoken():
