@@ -101,7 +101,6 @@ async def self(interaction: discord.Interaction):
 @tree.command(name="recordinfo", description="database test")
 async def self(interaction: discord.Interaction):
     try:
-        print(f"{interaction.user.id} {interaction.user.name} {interaction.user.discriminator}")
         insert_user(interaction.user.id, interaction.user.name, interaction.user.discriminator)
         await interaction.response.send_message(content="Recorded", ephemeral=True)
     except Exception as e:

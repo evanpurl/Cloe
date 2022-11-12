@@ -14,13 +14,18 @@ def insert_user(userid, username, discrim):
         if conn.is_connected():
             print('Connection established.')
             c = conn.cursor()
-            sql = f"INSERT INTO users (userid, username, discriminator) VALUES ({int(userid)}, {str(username)}, {int(discrim)});"
-            #sql = "CREATE TABLE UserTests (test1 INT);"
-            #vals = (userid, username, discrim)
-            c.execute(sql)
+            sql = f"INSERT INTO users (userid, username, discriminator) VALUES (%(userid)s, %(username)s, %(discriminator)s);"
+            user_data = {
+                'userid': userid,
+                'username': username,
+                'discriminator': discrim,
+            }
+            c.execute(sql, user_data)
             conn.commit()
             c.close()
+            conn.close()
         else:
             print('Connection failed.')
     except Error as e:
+        print(e)
         return e
