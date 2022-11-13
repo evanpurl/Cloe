@@ -8,29 +8,6 @@ import random
 ###################   Testing     ######################
 ########################################################
 
-def insert_user(userid, username, discrim):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            print('Connection established.')
-            c = conn.cursor()
-            sql = f"INSERT INTO users (userid, username, discriminator) VALUES (%(userid)s, %(username)s, %(discriminator)s);"
-            user_data = {
-                'userid': userid,
-                'username': username,
-                'discriminator': discrim,
-            }
-            c.execute(sql, user_data)
-            conn.commit()
-            c.close()
-            conn.close()
-        else:
-            print('Connection failed.')
-    except Error as e:
-        print(e)
-        return e
-
 
 def getgreeting(greeting):
     try:
@@ -46,6 +23,13 @@ def getgreeting(greeting):
             c.execute(sql, user_data)
             response = c.fetchone()
             if not response:
+                # sql = f"INSERT INTO greetings (greeting, responses) VALUES (%(greeting)s, %(responses)s);"
+                # user_data = {
+                #     'greeting': greeting,
+                #     'responses': "None",
+                # }
+                # c.execute(sql, user_data)
+                # conn.commit()
                 return None
             response = list(response)
             response = response[0].split(", ")

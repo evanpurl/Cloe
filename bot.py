@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
-from database import insert_user, getgreeting, getily, getcompliment
+from database import getgreeting, getily, getcompliment
 import string
 
 intents = discord.Intents.default()
@@ -84,13 +84,13 @@ async def on_message(message):
         ily = getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
         compliment = getcompliment(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
         if response:
-            if any(substring in message.content.lower() for substring in response):
+            if any(substring in response for substring in message.content.lower()):
                 await message.channel.send(f"{response} {message.author.name}!")
         elif ily:
-            if any(substring in message.content.lower() for substring in ily):
+            if any(substring in ily for substring in message.content.lower()):
                 await message.channel.send(f"{ily} {message.author.name}!")
         elif compliment:
-            if any(substring in message.content.lower() for substring in compliment):
+            if any(substring in compliment for substring in message.content.lower()):
                 await message.channel.send(f"{compliment} {message.author.name}!")
         # elif any(substring in message.content.lower() for substring in
         #          ["what can you do", "what do you do", "what are you capable of"]):
@@ -107,16 +107,6 @@ async def self(interaction: discord.Interaction):
         **Welcoming people to the server.**
         **Auto adding people to the 'Player' role.**""",
         ephemeral=True)
-
-
-@tree.command(name="recordinfo", description="database test")
-async def self(interaction: discord.Interaction):
-    try:
-        insert_user(interaction.user.id, interaction.user.name, interaction.user.discriminator)
-        await interaction.response.send_message(content="Recorded", ephemeral=True)
-    except Exception as e:
-        print(e)
-        await interaction.response.send_message(content="Something went wrong!", ephemeral=True)
 
 
 def grabtoken():
