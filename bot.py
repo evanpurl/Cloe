@@ -84,14 +84,11 @@ async def on_message(message):
         ily = getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
         compliment = getcompliment(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
         if response:
-            if any(substring in response for substring in message.content.lower()):
-                await message.channel.send(f"{response} {message.author.name}!")
+            await message.channel.send(f"{response} {message.author.name}!")
         elif ily:
-            if any(substring in ily for substring in message.content.lower()):
-                await message.channel.send(f"{ily} {message.author.name}!")
+            await message.channel.send(f"{ily} {message.author.name}!")
         elif compliment:
-            if any(substring in compliment for substring in message.content.lower()):
-                await message.channel.send(f"{compliment} {message.author.name}!")
+            await message.channel.send(f"{compliment} {message.author.name}!")
         # elif any(substring in message.content.lower() for substring in
         #          ["what can you do", "what do you do", "what are you capable of"]):
         #     await message.channel.send(

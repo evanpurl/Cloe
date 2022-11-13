@@ -14,7 +14,7 @@ def getgreeting(greeting):
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
-            print('Processing Greeting.')
+            #print('Processing Greeting.')
             c = conn.cursor()
             sql = f"SELECT responses from greetings where greeting=%(greeting)s;"
             user_data = {
@@ -49,7 +49,7 @@ def getily(ily):
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
-            print('Processing Affirmation.')
+            #print('Processing Affirmation.')
             c = conn.cursor()
             sql = f"SELECT responses from affirmations where affirmation=%(affirmation)s;"
             user_data = {
@@ -77,7 +77,7 @@ def getcompliment(compliment):
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
-            print('Processing Compliment.')
+            #print('Processing Compliment.')
             c = conn.cursor()
             sql = f"SELECT responses from compliments where compliment=%(compliment)s;"
             user_data = {
