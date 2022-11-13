@@ -38,7 +38,7 @@ def getgreeting(greeting):
             conn.close()
             return choice
         else:
-            print('Connection failed.')
+            return 'Connection to database failed.'
     except Error as e:
         print(e)
         return e
@@ -66,7 +66,7 @@ def getily(ily):
             conn.close()
             return choice
         else:
-            print('Connection failed.')
+            return 'Connection to database failed.'
     except Exception as e:
         print(e)
         return e
@@ -94,7 +94,7 @@ def getcompliment(compliment):
             conn.close()
             return choice
         else:
-            print('Connection failed.')
+            return 'Connection to database failed.'
     except Exception as e:
         print(e)
         return e
