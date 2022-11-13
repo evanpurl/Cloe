@@ -130,6 +130,14 @@ async def self(interaction: discord.Interaction, user: discord.User):
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 
+@tree.error
+async def on_app_command_error(interaction, error):
+    if isinstance(error, app_commands.BotMissingPermissions):
+        await interaction.response.send_message(error, ephemeral=True)
+    else:
+        await interaction.response.send_message(error, ephemeral=True)
+
+
 @tree.command(name="remsupporter", description="Slash command to remove people from the supporter role.")
 @app_commands.checks.has_permissions(administrator=True)
 async def self(interaction: discord.Interaction, user: discord.User):
