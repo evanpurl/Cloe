@@ -2,7 +2,8 @@ import discord
 from discord import app_commands
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
-from database import insert_user
+from database import insert_user, getgreeting, getily, getcompliment
+import string
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -78,13 +79,23 @@ async def on_member_remove(member):
 async def on_message(message):
     if message.author == client.user:
         return
-
-    if message.content.lower().startswith(f"hello <@{client.user.id}>"):
-        await message.channel.send(f"Hello {message.author.mention}!")
-
-    elif message.content.lower().startswith(f"i love you <@{client.user.id}>") or message.content.lower().startswith(
-            f"love you <@{client.user.id}>"):
-        await message.channel.send(f"I love you too {message.author.mention}!")
+    if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
+        response = getgreeting(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+        ily = getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+        compliment = getcompliment(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+        if response:
+            if any(substring in message.content.lower() for substring in response):
+                await message.channel.send(f"{response} {message.author.name}!")
+        elif ily:
+            if any(substring in message.content.lower() for substring in ily):
+                await message.channel.send(f"{ily} {message.author.name}!")
+        elif compliment:
+            if any(substring in message.content.lower() for substring in compliment):
+                await message.channel.send(f"{compliment} {message.author.name}!")
+        # elif any(substring in message.content.lower() for substring in
+        #          ["what can you do", "what do you do", "what are you capable of"]):
+        #     await message.channel.send(
+        #         f"Hello {message.author.name}, currently I am able to welcome people to the server, say goodbye to people who leave, auto add people to the player role, and understand basic questions!")
 
 
 # Slash commands:
@@ -106,8 +117,6 @@ async def self(interaction: discord.Interaction):
     except Exception as e:
         print(e)
         await interaction.response.send_message(content="Something went wrong!", ephemeral=True)
-
-
 
 
 def grabtoken():
