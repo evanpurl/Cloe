@@ -80,9 +80,11 @@ async def on_message(message):
     if message.author == client.user:
         return
     if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
-        response = getgreeting(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+        response = getgreeting(
+            message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
         ily = getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
-        compliment = getcompliment(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+        compliment = getcompliment(
+            message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
         if response:
             await message.channel.send(f"{response} {message.author.name}!")
         elif ily:
@@ -104,6 +106,51 @@ async def self(interaction: discord.Interaction):
         **Welcoming people to the server.**
         **Auto adding people to the 'Player' role.**""",
         ephemeral=True)
+
+
+@tree.command(name="supporter", description="Slash command to add people to the supporter role.")
+@app_commands.checks.has_permissions(administrator=True)
+async def self(interaction: discord.Interaction, user: discord.User):
+    try:
+        role = discord.utils.get(interaction.guild.roles, name="Supporter")
+        if role:
+            if role in user.roles:
+
+                await interaction.response.send_message(content=f"""{user.name} already has the role Supporter.""",
+                                                        ephemeral=True)
+            else:
+                await user.add_roles(role)
+                await interaction.response.send_message(content=f"""{user.name} has been added to role Supporter.""",
+                                                        ephemeral=True)
+        else:
+            await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
+                                                    ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
+@tree.command(name="remsupporter", description="Slash command to remove people from the supporter role.")
+@app_commands.checks.has_permissions(administrator=True)
+async def self(interaction: discord.Interaction, user: discord.User):
+    try:
+        role = discord.utils.get(interaction.guild.roles, name="Supporter")
+        if role:
+            if role in user.roles:
+                await user.remove_roles(role)
+                await interaction.response.send_message(
+                    content=f"""{user.name} has been remove from the role Supporter.""",
+                    ephemeral=True)
+            else:
+                await interaction.response.send_message(
+                    content=f"""{user.name} does not have the role Supporter.""",
+                    ephemeral=True)
+        else:
+            await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
+                                                    ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 
 def grabtoken():
