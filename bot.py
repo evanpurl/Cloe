@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
-from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole
+from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, setsupprole, getsupprole
 import string
 import operator
 
@@ -131,24 +131,41 @@ async def self(interaction: discord.Interaction, role: discord.Role):
         print(e)
 
 
+@tree.command(name="setsupporter", description="Slash command for setting supporter role.")
+async def self(interaction: discord.Interaction, role: discord.Role):
+    try:
+        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        if modrole in interaction.user.roles:
+            setsupprole(role.id, interaction.guild.id)
+            await interaction.response.send_message(
+                content=f"Supporter role has been set to {role.name}",
+                ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+
+
 @tree.command(name="supporter", description="Slash command to add people to the supporter role.")
 async def self(interaction: discord.Interaction, user: discord.User):
     try:
         modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
         if modrole in interaction.user.roles:
-            role = discord.utils.get(interaction.guild.roles, name="Supporter")
+            role = discord.utils.get(interaction.guild.roles, id=getsupprole(interaction.guild.id)[0])
             if role:
                 if role in user.roles:
 
-                    await interaction.response.send_message(content=f"""{user.name} already has the role Supporter.""",
+                    await interaction.response.send_message(content=f"""{user.name} already has the role {role.name}.""",
                                                             ephemeral=True)
                 else:
                     await user.add_roles(role)
                     await interaction.response.send_message(
-                        content=f"""{user.name} has been added to role Supporter.""",
+                        content=f"""{user.name} has been added to role {role.name}.""",
                         ephemeral=True)
             else:
-                await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
+                await interaction.response.send_message(content=f"""Role does not exist.""",
                                                         ephemeral=True)
         else:
             await interaction.response.send_message(
@@ -172,19 +189,19 @@ async def self(interaction: discord.Interaction, user: discord.User):
     try:
         modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
         if modrole in interaction.user.roles:
-            role = discord.utils.get(interaction.guild.roles, name="Supporter")
+            role = discord.utils.get(interaction.guild.roles, id=getsupprole(interaction.guild.id)[0])
             if role:
                 if role in user.roles:
                     await user.remove_roles(role)
                     await interaction.response.send_message(
-                        content=f"""{user.name} has been remove from the role Supporter.""",
+                        content=f"""{user.name} has been removed from the role {role.name}.""",
                         ephemeral=True)
                 else:
                     await interaction.response.send_message(
-                        content=f"""{user.name} does not have the role Supporter.""",
+                        content=f"""{user.name} does not have the role {role.name}.""",
                         ephemeral=True)
             else:
-                await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
+                await interaction.response.send_message(content=f"""Role does not exist.""",
                                                         ephemeral=True)
         else:
             await interaction.response.send_message(

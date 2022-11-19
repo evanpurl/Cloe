@@ -67,6 +67,29 @@ def setmodrole(role, server):
         return e
 
 
+def setsupprole(role, server):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"UPDATE servers SET supporterrole = %(supporterrole)s WHERE serverid = %(server)s;"
+            user_data = {
+                'supporterrole': role,
+                'server': server,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
 def getmodrole(server):
     try:
         db_config = read_db_config()
@@ -75,6 +98,30 @@ def getmodrole(server):
             c = conn.cursor()
 
             sql = f"SELECT editrole from servers where serverid=%(serverid)s;"
+            user_data = {
+                'serverid': server,
+            }
+            c.execute(sql, user_data)
+            role = c.fetchone()
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+            return role
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+def getsupprole(server):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"SELECT supporterrole from servers where serverid=%(serverid)s;"
             user_data = {
                 'serverid': server,
             }
