@@ -14,7 +14,7 @@ def getgreeting(greeting):
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
-            #print('Processing Greeting.')
+            # print('Processing Greeting.')
             c = conn.cursor()
             sql = f"SELECT responses from greetings where greeting=%(greeting)s;"
             user_data = {
@@ -44,12 +44,103 @@ def getgreeting(greeting):
         return e
 
 
+def setmodrole(role, server):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"UPDATE servers SET editrole = %(editrole)s WHERE serverid = %(server)s;"
+            user_data = {
+                'editrole': role,
+                'server': server,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+def getmodrole(server):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"SELECT editrole from servers where serverid=%(serverid)s;"
+            user_data = {
+                'serverid': server,
+            }
+            c.execute(sql, user_data)
+            role = c.fetchone()
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+            return role
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+def createserver(server):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"INSERT INTO servers (serverid) VALUES (%(serverid)s);"
+            user_data = {
+                'serverid': server,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+def deleteserver(server):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"DELETE FROM servers WHERE serverid = (%(serverid)s);"
+            user_data = {
+                'serverid': server,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
 def getily(ily):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
-            #print('Processing Affirmation.')
+            # print('Processing Affirmation.')
             c = conn.cursor()
             sql = f"SELECT responses from affirmations where affirmation=%(affirmation)s;"
             user_data = {
@@ -77,7 +168,7 @@ def getcompliment(compliment):
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
-            #print('Processing Compliment.')
+            # print('Processing Compliment.')
             c = conn.cursor()
             sql = f"SELECT responses from compliments where compliment=%(compliment)s;"
             user_data = {

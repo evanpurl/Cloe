@@ -2,8 +2,9 @@ import discord
 from discord import app_commands
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
-from database import getgreeting, getily, getcompliment
+from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole
 import string
+import operator
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -38,7 +39,7 @@ def connect():
             print('Connection closed.')
 
 
-class aclient(discord.Client):
+class Aclient(discord.Client):
 
     def __init__(self):
         super().__init__(intents=intents, activity=activity)
@@ -54,7 +55,7 @@ class aclient(discord.Client):
         print(f"Logged in as {self.user}")
 
 
-client = aclient()
+client = Aclient()
 tree = app_commands.CommandTree(client)
 
 
@@ -76,6 +77,16 @@ async def on_member_remove(member):
 
 
 @client.event
+async def on_guild_join(guild):
+    createserver(guild.id)
+
+
+@client.event
+async def on_guild_remove(guild):
+    deleteserver(guild.id)
+
+
+@client.event
 async def on_message(message):
     if message.author == client.user:
         return
@@ -91,10 +102,10 @@ async def on_message(message):
             await message.channel.send(f"{ily} {message.author.name}!")
         elif compliment:
             await message.channel.send(f"{compliment} {message.author.name}!")
-        # elif any(substring in message.content.lower() for substring in
-        #          ["what can you do", "what do you do", "what are you capable of"]):
-        #     await message.channel.send(
-        #         f"Hello {message.author.name}, currently I am able to welcome people to the server, say goodbye to people who leave, auto add people to the player role, and understand basic questions!")
+        # elif any(substring in message.content.lower() for substring in ["what can you do", "what do you do",
+        # "what are you capable of"]): await message.channel.send( f"Hello {message.author.name}, currently I am able
+        # to welcome people to the server, say goodbye to people who leave, auto add people to the player role,
+        # and understand basic questions!")
 
 
 # Slash commands:
@@ -108,23 +119,41 @@ async def self(interaction: discord.Interaction):
         ephemeral=True)
 
 
-@tree.command(name="supporter", description="Slash command to add people to the supporter role.")
+@tree.command(name="setmodrole", description="Slash command for setting Moderation role.")
 @app_commands.checks.has_permissions(administrator=True)
+async def self(interaction: discord.Interaction, role: discord.Role):
+    try:
+        setmodrole(role.id, interaction.guild.id)
+        await interaction.response.send_message(
+            content=f"Mod role has been set to {role.name}",
+            ephemeral=True)
+    except Exception as e:
+        print(e)
+
+
+@tree.command(name="supporter", description="Slash command to add people to the supporter role.")
 async def self(interaction: discord.Interaction, user: discord.User):
     try:
-        role = discord.utils.get(interaction.guild.roles, name="Supporter")
-        if role:
-            if role in user.roles:
+        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        if modrole in interaction.user.roles:
+            role = discord.utils.get(interaction.guild.roles, name="Supporter")
+            if role:
+                if role in user.roles:
 
-                await interaction.response.send_message(content=f"""{user.name} already has the role Supporter.""",
-                                                        ephemeral=True)
+                    await interaction.response.send_message(content=f"""{user.name} already has the role Supporter.""",
+                                                            ephemeral=True)
+                else:
+                    await user.add_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""{user.name} has been added to role Supporter.""",
+                        ephemeral=True)
             else:
-                await user.add_roles(role)
-                await interaction.response.send_message(content=f"""{user.name} has been added to role Supporter.""",
+                await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
                                                         ephemeral=True)
         else:
-            await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
-                                                    ephemeral=True)
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
     except Exception as e:
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
@@ -139,23 +168,28 @@ async def on_app_command_error(interaction, error):
 
 
 @tree.command(name="remsupporter", description="Slash command to remove people from the supporter role.")
-@app_commands.checks.has_permissions(administrator=True)
 async def self(interaction: discord.Interaction, user: discord.User):
     try:
-        role = discord.utils.get(interaction.guild.roles, name="Supporter")
-        if role:
-            if role in user.roles:
-                await user.remove_roles(role)
-                await interaction.response.send_message(
-                    content=f"""{user.name} has been remove from the role Supporter.""",
-                    ephemeral=True)
+        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        if modrole in interaction.user.roles:
+            role = discord.utils.get(interaction.guild.roles, name="Supporter")
+            if role:
+                if role in user.roles:
+                    await user.remove_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""{user.name} has been remove from the role Supporter.""",
+                        ephemeral=True)
+                else:
+                    await interaction.response.send_message(
+                        content=f"""{user.name} does not have the role Supporter.""",
+                        ephemeral=True)
             else:
-                await interaction.response.send_message(
-                    content=f"""{user.name} does not have the role Supporter.""",
-                    ephemeral=True)
+                await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
+                                                        ephemeral=True)
         else:
-            await interaction.response.send_message(content=f"""Role Supporter does not exist.""",
-                                                    ephemeral=True)
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
     except Exception as e:
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
