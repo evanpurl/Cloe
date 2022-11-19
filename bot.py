@@ -2,7 +2,8 @@ import discord
 from discord import app_commands
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
-from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, setsupprole, getsupprole
+from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
+    setsupprole, getsupprole
 import string
 import operator
 
@@ -15,7 +16,7 @@ activity = discord.Activity(name='Your every move', type=discord.ActivityType.wa
 syncguild = discord.Object(id=766120148826193942)
 
 
-def connect():
+def connect():  # Initial DB connection test
     """ Connect to MySQL database """
 
     db_config = read_db_config()
@@ -78,12 +79,12 @@ async def on_member_remove(member):
 
 @client.event
 async def on_guild_join(guild):
-    createserver(guild.id)
+    createserver(guild.id)  # Creates server row in database
 
 
 @client.event
 async def on_guild_remove(guild):
-    deleteserver(guild.id)
+    deleteserver(guild.id)  # Deletes server row in database.
 
 
 @client.event
@@ -129,6 +130,7 @@ async def self(interaction: discord.Interaction, role: discord.Role):
             ephemeral=True)
     except Exception as e:
         print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 
 @tree.command(name="setsupporter", description="Slash command for setting supporter role.")
@@ -146,6 +148,7 @@ async def self(interaction: discord.Interaction, role: discord.Role):
                 ephemeral=True)
     except Exception as e:
         print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 
 @tree.command(name="supporter", description="Slash command to add people to the supporter role.")
@@ -157,8 +160,9 @@ async def self(interaction: discord.Interaction, user: discord.User):
             if role:
                 if role in user.roles:
 
-                    await interaction.response.send_message(content=f"""{user.name} already has the role {role.name}.""",
-                                                            ephemeral=True)
+                    await interaction.response.send_message(
+                        content=f"""{user.name} already has the role {role.name}.""",
+                        ephemeral=True)
                 else:
                     await user.add_roles(role)
                     await interaction.response.send_message(
@@ -210,6 +214,9 @@ async def self(interaction: discord.Interaction, user: discord.User):
     except Exception as e:
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
+# End of slash commands
 
 
 def grabtoken():
