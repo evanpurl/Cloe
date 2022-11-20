@@ -1,17 +1,22 @@
+import asyncio
+
 import discord
 from discord import app_commands
+from discord.ext import tasks
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
 from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
     setsupprole, getsupprole
 import string
-import operator
+import time
+import datetime
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-activity = discord.Activity(name='Your every move', type=discord.ActivityType.watching)
+starttime = 0.0
+
 
 syncguild = discord.Object(id=766120148826193942)
 
@@ -43,7 +48,7 @@ def connect():  # Initial DB connection test
 class Aclient(discord.Client):
 
     def __init__(self):
-        super().__init__(intents=intents, activity=activity)
+        super().__init__(intents=intents)
         self.synced = False
 
     async def on_ready(self):
@@ -52,6 +57,9 @@ class Aclient(discord.Client):
             await tree.sync()
             self.synced = True
         connect()
+        global starttime
+        starttime = time.time()  # Get time in seconds at start
+        status_message.start()  # Start task loop
 
         print(f"Logged in as {self.user}")
 
@@ -59,6 +67,21 @@ class Aclient(discord.Client):
 client = Aclient()
 tree = app_commands.CommandTree(client)
 
+
+
+# Task loop
+@tasks.loop(minutes=1)
+async def status_message():
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
+                                                           name=f"Uptime: {datetime.timedelta(seconds=round(time.time() - starttime))}"))
+
+
+@status_message.before_loop
+async def status_beforeloop():
+    await client.wait_until_ready()
+
+
+# End of task loop
 
 @client.event
 async def on_member_join(member):
@@ -89,7 +112,9 @@ async def on_guild_remove(guild):
 
 @client.event
 async def on_message(message):
-    if message.author == client.user:
+    if message.author == client.user:  # If message is from itself, do nothing
+        return
+    if message.author.bot:  # If message is a bot, do nothing
         return
     if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
         response = getgreeting(
@@ -118,6 +143,16 @@ async def self(interaction: discord.Interaction):
         **Welcoming people to the server.**
         **Auto adding people to the 'Player' role.**""",
         ephemeral=True)
+
+
+# @tree.command(name="creator", description="Tells you about who created the bot")
+# async def self(interaction: discord.Interaction):
+#     await interaction.response.send_message(
+#         content=f"""{interaction.user.mention}, this is the 2.0 version of Cloe. My features are as follows:
+#         **Saying hello.**
+#         **Welcoming people to the server.**
+#         **Auto adding people to the 'Player' role.**""",
+#         ephemeral=True)
 
 
 @tree.command(name="setmodrole", description="Slash command for setting Moderation role.")
@@ -207,6 +242,26 @@ async def self(interaction: discord.Interaction, user: discord.User):
             else:
                 await interaction.response.send_message(content=f"""Role does not exist.""",
                                                         ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
+@tree.command(name="purge", description="Slash command for Purging a channel.")
+async def self(interaction: discord.Interaction, channel: discord.TextChannel, number: int):
+    try:
+        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        if modrole in interaction.user.roles:
+            await interaction.response.defer(ephemeral=True)
+            messages = channel.history(limit=number)
+            async for a in messages:
+                await a.delete()
+                await asyncio.sleep(3)
+            await interaction.followup.send(f"Deleted {number} message(s)")
         else:
             await interaction.response.send_message(
                 content=f"""You don't have proper permissions to run this command.""",
