@@ -7,6 +7,7 @@ from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
 from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
     setsupprole, getsupprole
+from updatesite import update_wordpress_post
 import string
 import time
 import datetime
@@ -16,7 +17,6 @@ intents.message_content = True
 intents.members = True
 
 starttime = 0.0
-
 
 syncguild = discord.Object(id=766120148826193942)
 
@@ -68,10 +68,10 @@ client = Aclient()
 tree = app_commands.CommandTree(client)
 
 
-
 # Task loop
 @tasks.loop(minutes=1)
 async def status_message():
+    update_wordpress_post()
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
                                                            name=f"Uptime: {datetime.timedelta(seconds=round(time.time() - starttime))}"))
 
