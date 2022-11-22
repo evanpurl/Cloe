@@ -6,7 +6,7 @@ from discord.ext import tasks
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
 from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
-    setsupprole, getsupprole
+    setsupprole, getsupprole, setauthuser, getauthuser
 from updatesite import update_wordpress_post
 import string
 import time
@@ -116,22 +116,25 @@ async def on_message(message):
         return
     if message.author.bot:  # If message is a bot, do nothing
         return
-    if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
-        response = getgreeting(
-            message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
-        ily = getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
-        compliment = getcompliment(
-            message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
-        if response:
-            await message.channel.send(f"{response} {message.author.name}!")
-        elif ily:
-            await message.channel.send(f"{ily} {message.author.name}!")
-        elif compliment:
-            await message.channel.send(f"{compliment} {message.author.name}!")
-        # elif any(substring in message.content.lower() for substring in ["what can you do", "what do you do",
-        # "what are you capable of"]): await message.channel.send( f"Hello {message.author.name}, currently I am able
-        # to welcome people to the server, say goodbye to people who leave, auto add people to the player role,
-        # and understand basic questions!")
+    auth = await getauthuser(message.author.id)
+    if message.author.id in auth:
+        if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
+            response = await getgreeting(
+                message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+            ily = await getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+            compliment = await getcompliment(
+                message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+            if response:
+                await message.reply(f"{response} {message.author.name}!")
+            elif ily:
+                await message.reply(f"{ily} {message.author.name}!")
+            elif compliment:
+                await message.reply(f"{compliment} {message.author.name}!")
+            await asyncio.sleep(3)
+            # elif any(substring in message.content.lower() for substring in ["what can you do", "what do you do",
+            # "what are you capable of"]): await message.channel.send( f"Hello {message.author.name}, currently I am able
+            # to welcome people to the server, say goodbye to people who leave, auto add people to the player role,
+            # and understand basic questions!")
 
 
 # Slash commands:
@@ -159,9 +162,22 @@ async def self(interaction: discord.Interaction):
 @app_commands.checks.has_permissions(administrator=True)
 async def self(interaction: discord.Interaction, role: discord.Role):
     try:
-        setmodrole(role.id, interaction.guild.id)
+        await setmodrole(role.id, interaction.guild.id)
         await interaction.response.send_message(
             content=f"Mod role has been set to {role.name}",
+            ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
+@tree.command(name="setauthorized", description="Slash command for setting cloe's authorized users.")
+@app_commands.checks.has_permissions(administrator=True)
+async def self(interaction: discord.Interaction, user: discord.User):
+    try:
+        await setauthuser(user.id)
+        await interaction.response.send_message(
+            content=f"{user.name} has been authorized.",
             ephemeral=True)
     except Exception as e:
         print(e)
@@ -171,9 +187,10 @@ async def self(interaction: discord.Interaction, role: discord.Role):
 @tree.command(name="setsupporter", description="Slash command for setting supporter role.")
 async def self(interaction: discord.Interaction, role: discord.Role):
     try:
-        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        modr = await getmodrole(interaction.guild.id)
+        modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
         if modrole in interaction.user.roles:
-            setsupprole(role.id, interaction.guild.id)
+            await setsupprole(role.id, interaction.guild.id)
             await interaction.response.send_message(
                 content=f"Supporter role has been set to {role.name}",
                 ephemeral=True)
@@ -189,9 +206,11 @@ async def self(interaction: discord.Interaction, role: discord.Role):
 @tree.command(name="supporter", description="Slash command to add people to the supporter role.")
 async def self(interaction: discord.Interaction, user: discord.User):
     try:
-        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        modr = await getmodrole(interaction.guild.id)
+        modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
         if modrole in interaction.user.roles:
-            role = discord.utils.get(interaction.guild.roles, id=getsupprole(interaction.guild.id)[0])
+            supr = await getsupprole(interaction.guild.id)
+            role = discord.utils.get(interaction.guild.roles, id=supr[0])
             if role:
                 if role in user.roles:
 
@@ -226,9 +245,11 @@ async def on_app_command_error(interaction, error):
 @tree.command(name="remsupporter", description="Slash command to remove people from the supporter role.")
 async def self(interaction: discord.Interaction, user: discord.User):
     try:
-        modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+        modr = await getmodrole(interaction.guild.id)
+        modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
         if modrole in interaction.user.roles:
-            role = discord.utils.get(interaction.guild.roles, id=getsupprole(interaction.guild.id)[0])
+            suupr = await getsupprole(interaction.guild.id)
+            role = discord.utils.get(interaction.guild.roles, id=supr[0])
             if role:
                 if role in user.roles:
                     await user.remove_roles(role)
@@ -259,7 +280,8 @@ async def self(interaction: discord.Interaction, channel: discord.TextChannel, n
                 content=f"""Cannot purge more than 50 messages at a time.""",
                 ephemeral=True)
         else:
-            modrole = discord.utils.get(interaction.guild.roles, id=getmodrole(interaction.guild.id)[0])
+            modr = await getmodrole(interaction.guild.id)
+            modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
             if modrole in interaction.user.roles:
                 await interaction.response.defer(ephemeral=True)
                 messages = channel.history(limit=number)

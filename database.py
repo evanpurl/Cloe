@@ -1,6 +1,7 @@
 from mysql.connector import MySQLConnection, Error
 from python_mysql_dbconfig import read_db_config
 import random
+import asyncio
 
 
 ########################################################
@@ -9,7 +10,7 @@ import random
 ########################################################
 
 
-def getgreeting(greeting):
+async def getgreeting(greeting):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -31,7 +32,6 @@ def getgreeting(greeting):
                 # c.execute(sql, user_data)
                 # conn.commit()
                 return None
-            response = list(response)
             response = response[0].split(", ")
             choice = random.choice(response)
             c.close()
@@ -44,7 +44,7 @@ def getgreeting(greeting):
         return e
 
 
-def setmodrole(role, server):
+async def setmodrole(role, server):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -67,7 +67,29 @@ def setmodrole(role, server):
         return e
 
 
-def setsupprole(role, server):
+async def setauthuser(user):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"INSERT INTO authorized (authusers) VALUES (%(authusers)s);"
+            user_data = {
+                'authusers': user,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+async def setsupprole(role, server):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -90,7 +112,7 @@ def setsupprole(role, server):
         return e
 
 
-def getmodrole(server):
+async def getmodrole(server):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -114,7 +136,31 @@ def getmodrole(server):
         return e
 
 
-def getsupprole(server):
+async def getauthuser(user):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"SELECT authusers from authorized where authusers=%(authusers)s;"
+            user_data = {
+                'authusers': user,
+            }
+            c.execute(sql, user_data)
+            role = c.fetchone()
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+            return role
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+async def getsupprole(server):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -138,7 +184,7 @@ def getsupprole(server):
         return e
 
 
-def createserver(server):
+async def createserver(server):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -160,7 +206,7 @@ def createserver(server):
         return e
 
 
-def deleteserver(server):
+async def deleteserver(server):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -182,7 +228,7 @@ def deleteserver(server):
         return e
 
 
-def getily(ily):
+async def getily(ily):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -197,7 +243,6 @@ def getily(ily):
             response = c.fetchone()
             if not response:
                 return None
-            response = list(response)
             response = response[0].split(", ")
             choice = random.choice(response)
             c.close()
@@ -210,7 +255,7 @@ def getily(ily):
         return e
 
 
-def getcompliment(compliment):
+async def getcompliment(compliment):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
@@ -225,7 +270,6 @@ def getcompliment(compliment):
             response = c.fetchone()
             if not response:
                 return None
-            response = list(response)
             response = response[0].split(", ")
             choice = random.choice(response)
             c.close()
