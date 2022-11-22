@@ -125,7 +125,6 @@ async def getmodrole(server):
             }
             c.execute(sql, user_data)
             role = c.fetchone()
-            conn.commit()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
             return role
@@ -149,7 +148,6 @@ async def getauthuser(user):
             }
             c.execute(sql, user_data)
             role = c.fetchone()
-            conn.commit()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
             return role
@@ -173,7 +171,6 @@ async def getsupprole(server):
             }
             c.execute(sql, user_data)
             role = c.fetchone()
-            conn.commit()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
             return role

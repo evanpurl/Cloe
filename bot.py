@@ -117,7 +117,7 @@ async def on_message(message):
     if message.author.bot:  # If message is a bot, do nothing
         return
     auth = await getauthuser(message.author.id)
-    if message.author.id in auth:
+    if auth:
         if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
             response = await getgreeting(
                 message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
