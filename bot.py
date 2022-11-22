@@ -248,7 +248,7 @@ async def self(interaction: discord.Interaction, user: discord.User):
         modr = await getmodrole(interaction.guild.id)
         modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
         if modrole in interaction.user.roles:
-            suupr = await getsupprole(interaction.guild.id)
+            supr = await getsupprole(interaction.guild.id)
             role = discord.utils.get(interaction.guild.roles, id=supr[0])
             if role:
                 if role in user.roles:
