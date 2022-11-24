@@ -131,9 +131,9 @@ async def on_message(message):
                 await message.reply(f"{compliment} {message.author.name}!")
             await asyncio.sleep(3)
             # elif any(substring in message.content.lower() for substring in ["what can you do", "what do you do",
-            # "what are you capable of"]): await message.channel.send( f"Hello {message.author.name}, currently I am able
-            # to welcome people to the server, say goodbye to people who leave, auto add people to the player role,
-            # and understand basic questions!")
+            # "what are you capable of"]): await message.channel.send( f"Hello {message.author.name}, currently I am
+            # able to welcome people to the server, say goodbye to people who leave, auto add people to the player
+            # role, and understand basic questions!")
 
 
 # Slash commands:
