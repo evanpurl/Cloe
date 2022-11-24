@@ -1,9 +1,9 @@
 import asyncio
-
 import discord
 from discord import app_commands
 from discord.ext import tasks
 from mysql.connector import Error, MySQLConnection
+import _mysql_connector
 from python_mysql_dbconfig import read_db_config
 from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
     setsupprole, getsupprole, setauthuser, getauthuser
@@ -28,9 +28,10 @@ def connect():  # Initial DB connection test
     conn = None
     try:
         print('Connecting to MySQL database...')
-        conn = MySQLConnection(**db_config)
-
-        if conn.is_connected():
+        conn = _mysql_connector.MySQL()
+        conn.connect(host="infra-eu-fal-01.wyvern.pro", database="s312_CloeDB", user="u312_5RbDduMI3t",
+                     password="+WxCWhx.a@rZJqjBq.^98U^r", port=3306)
+        if conn.connected():
             print('Connection established.')
         else:
             print('Connection failed.')
@@ -40,7 +41,7 @@ def connect():  # Initial DB connection test
         print(error)
 
     finally:
-        if conn is not None and conn.is_connected():
+        if conn is not None and conn.connected():
             conn.close()
             print('Connection closed.')
 
@@ -121,7 +122,8 @@ async def on_message(message):
         if any(substring in message.content.lower() for substring in ["cloe"]):  # Trigger word
             response = await getgreeting(
                 message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
-            ily = await getily(message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
+            ily = await getily(
+                message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
             compliment = await getcompliment(
                 message.content.lower().replace('cloe', '').translate(str.maketrans('', '', string.punctuation)))
             if response:
