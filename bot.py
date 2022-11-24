@@ -100,12 +100,12 @@ async def on_member_remove(member):
 
 @client.event
 async def on_guild_join(guild):
-    createserver(guild.id)  # Creates server row in database
+    await createserver(guild.id)  # Creates server row in database
 
 
 @client.event
 async def on_guild_remove(guild):
-    deleteserver(guild.id)  # Deletes server row in database.
+    await deleteserver(guild.id)  # Deletes server row in database.
 
 
 @client.event
