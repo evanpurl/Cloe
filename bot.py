@@ -5,7 +5,7 @@ from discord.ext import tasks
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
 from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
-    setsupprole, getsupprole, setauthuser, getauthuser
+    setsupprole, getsupprole, setauthuser, getauthuser, setplayerrole, getplayerrole
 from updatesite import update_wordpress_post
 import string
 import time
@@ -84,8 +84,9 @@ async def status_beforeloop():
 @client.event
 async def on_member_join(member):
     channel = discord.utils.get(member.guild.channels, name="welcome")
+    roleid = await getplayerrole(member.guild.id)
     await channel.send(f"Welcome to the server {member.mention}!")
-    role = discord.utils.get(member.guild.roles, name="Player")
+    role = discord.utils.get(member.guild.roles, id=roleid[0])
     if role:
         await member.add_roles(role)
     else:
@@ -147,16 +148,6 @@ async def self(interaction: discord.Interaction):
         ephemeral=True)
 
 
-# @tree.command(name="creator", description="Tells you about who created the bot")
-# async def self(interaction: discord.Interaction):
-#     await interaction.response.send_message(
-#         content=f"""{interaction.user.mention}, this is the 2.0 version of Cloe. My features are as follows:
-#         **Saying hello.**
-#         **Welcoming people to the server.**
-#         **Auto adding people to the 'Player' role.**""",
-#         ephemeral=True)
-
-
 @tree.command(name="setmodrole", description="Slash command for setting Moderation role.")
 @app_commands.checks.has_permissions(administrator=True)
 async def self(interaction: discord.Interaction, role: discord.Role):
@@ -201,6 +192,54 @@ async def self(interaction: discord.Interaction, role: discord.Role):
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+
+@tree.command(name="setplayer", description="Slash command for setting player role.")
+async def self(interaction: discord.Interaction, role: discord.Role):
+    try:
+        modr = await getmodrole(interaction.guild.id)
+        modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
+        if modrole in interaction.user.roles:
+            await setplayerrole(role.id, interaction.guild.id)
+            await interaction.response.send_message(
+                content=f"Player role has been set to {role.name}",
+                ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+@tree.command(name="player", description="Slash command to add people to the player role.")
+async def self(interaction: discord.Interaction, user: discord.User):
+    try:
+        modr = await getmodrole(interaction.guild.id)
+        modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
+        if modrole in interaction.user.roles:
+            player = await getplayerrole(interaction.guild.id)
+            role = discord.utils.get(interaction.guild.roles, id=player[0])
+            if role:
+                if role in user.roles:
+
+                    await interaction.response.send_message(
+                        content=f"""{user.name} already has the role {role.name}.""",
+                        ephemeral=True)
+                else:
+                    await user.add_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""{user.name} has been added to role {role.name}.""",
+                        ephemeral=True)
+            else:
+                await interaction.response.send_message(content=f"""Role does not exist.""",
+                                                        ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 @tree.command(name="supporter", description="Slash command to add people to the supporter role.")
 async def self(interaction: discord.Interaction, user: discord.User):
