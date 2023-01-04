@@ -19,6 +19,6 @@ async def update_wordpress_post():
     post_id = '627'
     data = {
         'status': 'publish',
-        'content': f"Cloe's Uptime updates every minute. \nLast Ping: {twelve.strftime('%r')} CST"
+        'content': f"Last Ping: {twelve.strftime('%r')} CST"
     }
     requests.post(api_url + post_id, headers=wordpress_header, json=data)  # Posts the update here.

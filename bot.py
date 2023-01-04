@@ -57,8 +57,10 @@ class Aclient(discord.Client):
         connect()
         global starttime
         starttime = time.time()  # Get time in seconds at start
+        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
+                                                               name=f"Have a good day everyone <3"))
         if not status_message.is_running():
-        	status_message.start()  # Start task loop
+            status_message.start()  # Start task loop
 
         print(f"Logged in as {self.user}")
 
@@ -71,8 +73,6 @@ tree = app_commands.CommandTree(client)
 @tasks.loop(minutes=1)
 async def status_message():
     await update_wordpress_post()
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
-                                                           name=f"Uptime: {datetime.timedelta(seconds=round(time.time() - starttime))}"))
 
 
 @status_message.before_loop
@@ -149,6 +149,13 @@ async def self(interaction: discord.Interaction):
         ephemeral=True)
 
 
+@tree.command(name="site", description="Slash command for Cloe's site page.")
+async def self(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        content=f"https://www.nitelifesoftware.com/bots/cloes-status/",
+        ephemeral=True)
+
+
 @tree.command(name="setmodrole", description="Slash command for setting Moderation role.")
 @app_commands.checks.has_permissions(administrator=True)
 async def self(interaction: discord.Interaction, role: discord.Role):
@@ -212,6 +219,7 @@ async def self(interaction: discord.Interaction, role: discord.Role):
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+
 @tree.command(name="player", description="Slash command to add people to the player role.")
 async def self(interaction: discord.Interaction, user: discord.User):
     try:
@@ -241,6 +249,7 @@ async def self(interaction: discord.Interaction, user: discord.User):
     except Exception as e:
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
 
 @tree.command(name="supporter", description="Slash command to add people to the supporter role.")
 async def self(interaction: discord.Interaction, user: discord.User):
@@ -340,11 +349,10 @@ async def self(interaction: discord.Interaction, channel: discord.TextChannel, n
 # End of slash commands
 
 if __name__ == '__main__':
-    loop = asyncio.new_event_loop()
     try:
         with open('stuff/token/token.txt', 'r') as token:
             token = token.read()
-        loop.run_until_complete(client.start(token))
+        asyncio.run(client.start(token))
     except KeyboardInterrupt:
         pass
 
