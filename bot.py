@@ -57,7 +57,8 @@ class Aclient(discord.Client):
         connect()
         global starttime
         starttime = time.time()  # Get time in seconds at start
-        status_message.start()  # Start task loop
+        if not status_message.is_running():
+        	status_message.start()  # Start task loop
 
         print(f"Logged in as {self.user}")
 
@@ -69,7 +70,7 @@ tree = app_commands.CommandTree(client)
 # Task loop
 @tasks.loop(minutes=1)
 async def status_message():
-    update_wordpress_post()
+    await update_wordpress_post()
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
                                                            name=f"Uptime: {datetime.timedelta(seconds=round(time.time() - starttime))}"))
 
@@ -338,12 +339,12 @@ async def self(interaction: discord.Interaction, channel: discord.TextChannel, n
 
 # End of slash commands
 
+if __name__ == '__main__':
+    loop = asyncio.new_event_loop()
+    try:
+        with open('stuff/token/token.txt', 'r') as token:
+            token = token.read()
+        loop.run_until_complete(client.start(token))
+    except KeyboardInterrupt:
+        pass
 
-def grabtoken():
-    token = open('stuff/token/token.txt', 'r')
-    if token:
-        print('Token grabbed, Staring bot.')
-        client.run(token.read())
-
-
-grabtoken()

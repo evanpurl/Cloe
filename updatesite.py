@@ -10,7 +10,7 @@ wordpress_token = base64.b64encode(wordpress_credentials.encode())
 wordpress_header = {'Authorization': 'Basic ' + wordpress_token.decode('utf-8')}
 
 
-def update_wordpress_post():
+async def update_wordpress_post():
     now = datetime.datetime.now()
     current_time = now.strftime("%H:%M")
     twelve = datetime.datetime.strptime(current_time, "%H:%M")
