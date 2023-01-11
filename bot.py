@@ -57,8 +57,6 @@ class Aclient(discord.Client):
         connect()
         global starttime
         starttime = time.time()  # Get time in seconds at start
-        await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
-                                                               name=f"Have a good day everyone <3"))
         if not status_message.is_running():
             status_message.start()  # Start task loop
 
@@ -72,6 +70,8 @@ tree = app_commands.CommandTree(client)
 # Task loop
 @tasks.loop(minutes=1)
 async def status_message():
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching,
+                                                           name=f"{datetime.timedelta(seconds=round(time.time() - starttime))}"))
     await update_wordpress_post()
 
 
