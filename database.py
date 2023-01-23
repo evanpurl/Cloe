@@ -173,6 +173,7 @@ async def getsupprole(server):
         print(e)
         return e
 
+
 async def setplayerrole(role, server):
     try:
         db_config = read_db_config()
@@ -194,6 +195,7 @@ async def setplayerrole(role, server):
     except Error as e:
         print(e)
         return e
+
 
 async def getplayerrole(server):
     try:
@@ -312,5 +314,54 @@ async def getcompliment(compliment):
         else:
             return 'Connection to database failed.'
     except Exception as e:
+        print(e)
+        return e
+
+
+# ----------------------- SE Section
+
+async def getLeader(userid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+            sql = f"SELECT roleid from spaceengineers where userid=%(userid)s;"
+            user_data = {
+                'userid': userid,
+            }
+            c.execute(sql, user_data)
+            response = c.fetchone()
+            if not response:
+                return None
+            c.close()
+            conn.close()
+            return response
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+async def setLeader(roleid, userid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"INSERT INTO spaceengineers (userid, roleid) VALUES (%(userid)s, %(roleid)s);"
+            user_data = {
+                'roleid': roleid,
+                'userid': userid,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
         print(e)
         return e

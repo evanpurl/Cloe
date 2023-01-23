@@ -5,7 +5,7 @@ from discord.ext import tasks
 from mysql.connector import Error, MySQLConnection
 from python_mysql_dbconfig import read_db_config
 from database import getgreeting, getily, getcompliment, createserver, deleteserver, setmodrole, getmodrole, \
-    setsupprole, getsupprole, setauthuser, getauthuser, setplayerrole, getplayerrole
+    setsupprole, getsupprole, setauthuser, getauthuser, setplayerrole, getplayerrole, getLeader, setLeader
 from updatesite import update_wordpress_post
 import string
 import time
@@ -17,7 +17,7 @@ intents.members = True
 
 starttime = 0.0
 
-syncguild = discord.Object(id=766120148826193942)
+syncguild = discord.Object(id=955962668756385792)
 
 
 def connect():  # Initial DB connection test
@@ -52,7 +52,7 @@ class Aclient(discord.Client):
     async def on_ready(self):
         await self.wait_until_ready()
         if not self.synced:
-            await tree.sync()
+            await tree.sync(guild=syncguild)
             self.synced = True
         connect()
         global starttime
@@ -132,10 +132,6 @@ async def on_message(message):
             elif compliment:
                 await message.reply(f"{compliment} {message.author.name}!")
             await asyncio.sleep(3)
-            # elif any(substring in message.content.lower() for substring in ["what can you do", "what do you do",
-            # "what are you capable of"]): await message.channel.send( f"Hello {message.author.name}, currently I am
-            # able to welcome people to the server, say goodbye to people who leave, auto add people to the player
-            # role, and understand basic questions!")
 
 
 # Slash commands:
@@ -346,6 +342,69 @@ async def self(interaction: discord.Interaction, channel: discord.TextChannel, n
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 
+# ------------------- SE Section
+
+@app_commands.checks.has_permissions(manage_roles=True)
+@tree.command(name="factionlead", description="Slash command to add faction role leader.", guild=syncguild)
+async def self(interaction: discord.Interaction, role: discord.Role, user: discord.User):
+    try:
+        leadrole = discord.utils.get(interaction.guild.roles, id=role.id)
+        if leadrole:
+            if leadrole not in user.roles:
+                await user.add_roles(leadrole)
+            await setLeader(role.id, user.id)
+            await interaction.response.send_message(
+                content=f"""Player __{user.name}__ has been added as a faction lead to faction **{role.name}**""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
+@tree.command(name="factionadd", description="Slash command to add player to faction role", guild=syncguild)
+async def self(interaction: discord.Interaction, user: discord.User):
+    try:
+        leader = await getLeader(interaction.user.id)
+        if leader:
+            leadrole = discord.utils.get(interaction.guild.roles, id=leader[0])
+            if leadrole not in user.roles:
+                await user.add_roles(leadrole)
+                await interaction.response.send_message(
+                    content=f"""Player __{user.name}__ has been added to faction **{leadrole.name}**""", ephemeral=True)
+            else:
+                await interaction.response.send_message(
+                    content=f"""Player __{user.name}__ is already in faction **{leadrole.name}**""", ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
+@tree.command(name="factionremove", description="Slash command to remove players from faction role", guild=syncguild)
+async def self(interaction: discord.Interaction, user: discord.User):
+    try:
+        leader = await getLeader(interaction.user.id)
+        if leader:
+            leadrole = discord.utils.get(interaction.guild.roles, id=leader[0])
+            if leadrole in user.roles:
+                await user.remove_roles(leadrole)
+                await interaction.response.send_message(
+                    content=f"""Player __{user.name}__ has been removed from faction **{leadrole.name}**""", ephemeral=True)
+            else:
+                await interaction.response.send_message(
+                    content=f"""Player __{user.name}__ is not in faction **{leadrole.name}**""", ephemeral=True)
+        else:
+            await interaction.response.send_message(
+                content=f"""You don't have proper permissions to run this command.""",
+                ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+
 # End of slash commands
 
 if __name__ == '__main__':
@@ -355,4 +414,3 @@ if __name__ == '__main__':
         asyncio.run(client.start(token))
     except KeyboardInterrupt:
         pass
-
