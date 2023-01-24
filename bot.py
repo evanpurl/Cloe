@@ -404,6 +404,28 @@ async def self(interaction: discord.Interaction, user: discord.User):
         print(e)
         await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+@tree.command(name="ping", description="Slash command to add people to the Ping role.", guild=syncguild)
+async def self(interaction: discord.Interaction):
+    try:
+        role = discord.utils.get(interaction.guild.roles, name="Ping")
+        if role:
+            if role in interaction.user.roles:
+
+                await interaction.response.send_message(
+                    content=f"""You're already in the role {role.name}.""",
+                    ephemeral=True)
+            else:
+                await interaction.user.add_roles(role)
+                await interaction.response.send_message(
+                    content=f"""You have been added to role {role.name}.""",
+                    ephemeral=True)
+        else:
+            await interaction.response.send_message(content=f"""Role does not exist.""",
+                                                    ephemeral=True)
+    except Exception as e:
+        print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
 
 # End of slash commands
 
