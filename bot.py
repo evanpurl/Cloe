@@ -52,7 +52,7 @@ class Aclient(discord.Client):
     async def on_ready(self):
         await self.wait_until_ready()
         if not self.synced:
-            await tree.sync(guild=syncguild)
+            await tree.sync()
             self.synced = True
         connect()
         global starttime
