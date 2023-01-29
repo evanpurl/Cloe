@@ -11,13 +11,13 @@ class cloecommands(commands.Cog):
 
     @commands.command(name="cloereload", description="command to reload cogs")
     async def reload(self, ctx) -> None:
-        if str(ctx.message.author.id) in await whohasaccess():
+        if await whohasaccess(ctx.message.author.id):
+            await ctx.send(f"Reloading cogs. Please Wait")
             for filename in os.listdir("./cogs"):
                 if filename.endswith(".py"):
-                    await ctx.send(f"reloading cog: {filename[:-3]}")
                     print(f"reloading cog: {filename[:-3]}")
                     await self.bot.reload_extension(f"cogs.{filename[:-3]}")
-            await ctx.send(f"Syncing commands")
+            await ctx.send(f"Cogs Reloaded, Syncing commands")
             print(f"Syncing commands")
             await self.bot.tree.sync()
             await ctx.send(f"Commands synced")

@@ -9,7 +9,7 @@ class misccommands(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="ping", description="Slash command to add people to the Ping role.")
-    async def self(self, interaction: discord.Interaction):
+    async def ping(self, interaction: discord.Interaction):
         try:
             role = discord.utils.get(interaction.guild.roles, name="Ping")
             if role:
@@ -31,7 +31,7 @@ class misccommands(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.command(name="version", description="Slash command for Cloe's version.")
-    async def self(self, interaction: discord.Interaction):
+    async def version(self, interaction: discord.Interaction):
         await interaction.response.send_message(
             content=f"""{interaction.user.mention}, this is the 2.0 version of Cloe. My features are as follows:
             **Saying hello.** 
@@ -41,7 +41,7 @@ class misccommands(commands.Cog):
             ephemeral=True)
 
     @app_commands.command(name="site", description="Slash command for Cloe's website page.")
-    async def self(self, interaction: discord.Interaction):
+    async def site(self, interaction: discord.Interaction):
         await interaction.response.send_message(
             content=f"https://www.nitelifesoftware.com/bots/cloes-status/",
             ephemeral=True)

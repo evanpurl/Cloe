@@ -1,5 +1,5 @@
 from mysql.connector import MySQLConnection, Error
-from python_mysql_dbconfig import read_db_config
+from database.python_mysql_dbconfig import read_db_config
 import random
 
 async def gettoken(botname):
@@ -158,7 +158,10 @@ async def getauthuser(user):
             role = c.fetchone()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
-            return role
+            if role:
+                return True
+            else:
+                return False
         else:
             return 'Connection to database failed.'
     except Error as e:
@@ -381,19 +384,25 @@ async def setLeader(roleid, userid):
         print(e)
         return e
 
-async def getwhohasaccess():
+async def getwhohasaccess(user):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"SELECT userid from access;"
-            c.execute(sql)
-            user = c.fetchall()
+            sql = f"SELECT userid from access where userid=%(userid)s;"
+            user_data = {
+                'userid': user,
+            }
+            c.execute(sql, user_data)
+            user = c.fetchone()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
-            return user
+            if user:
+                return True
+            else:
+                return False
         else:
             return 'Connection to database failed.'
     except Error as e:

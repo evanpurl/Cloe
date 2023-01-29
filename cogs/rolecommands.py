@@ -15,7 +15,7 @@ class rolecommands(commands.Cog):
 
     @app_commands.command(name="setmodrole", description="Slash command for setting Moderation role.")
     @app_commands.checks.has_permissions(administrator=True)
-    async def self(self, interaction: discord.Interaction, role: discord.Role):
+    async def setmodrole(self, interaction: discord.Interaction, role: discord.Role):
         try:
             await setmodrole(role.id, interaction.guild.id)
             await interaction.response.send_message(
@@ -27,7 +27,7 @@ class rolecommands(commands.Cog):
 
     @app_commands.command(name="setauthorized", description="Slash command for setting cloe's authorized users.")
     @app_commands.checks.has_permissions(administrator=True)
-    async def self(self, interaction: discord.Interaction, user: discord.User):
+    async def setauthorized(self, interaction: discord.Interaction, user: discord.User):
         try:
             await setauthuser(user.id)
             await interaction.response.send_message(
@@ -38,7 +38,7 @@ class rolecommands(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.command(name="setsupporter", description="Slash command for setting supporter role.")
-    async def self(self, interaction: discord.Interaction, role: discord.Role):
+    async def setsupporter(self, interaction: discord.Interaction, role: discord.Role):
         try:
             modr = await getmodrole(interaction.guild.id)
             modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
@@ -56,7 +56,7 @@ class rolecommands(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.command(name="setplayer", description="Slash command for setting player role.")
-    async def self(self, interaction: discord.Interaction, role: discord.Role):
+    async def setplayer(self, interaction: discord.Interaction, role: discord.Role):
         try:
             modr = await getmodrole(interaction.guild.id)
             modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
@@ -74,7 +74,7 @@ class rolecommands(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.command(name="player", description="Slash command to add people to the player role.")
-    async def self(self, interaction: discord.Interaction, user: discord.User):
+    async def player(self, interaction: discord.Interaction, user: discord.User):
         try:
             modr = await getmodrole(interaction.guild.id)
             modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
@@ -104,7 +104,7 @@ class rolecommands(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.command(name="supporter", description="Slash command to add people to the supporter role.")
-    async def self(self, interaction: discord.Interaction, user: discord.User):
+    async def supporter(self, interaction: discord.Interaction, user: discord.User):
         try:
             modr = await getmodrole(interaction.guild.id)
             modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
@@ -134,7 +134,7 @@ class rolecommands(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.command(name="remsupporter", description="Slash command to remove people from the supporter role.")
-    async def self(self, interaction: discord.Interaction, user: discord.User):
+    async def remsupporter(self, interaction: discord.Interaction, user: discord.User):
         try:
             modr = await getmodrole(interaction.guild.id)
             modrole = discord.utils.get(interaction.guild.roles, id=modr[0])
@@ -167,7 +167,7 @@ class rolecommands(commands.Cog):
     @app_commands.checks.has_permissions(manage_roles=True)
     @app_commands.guilds(SEServer)
     @app_commands.command(name="factionlead", description="Slash command to add faction role leader.")
-    async def self(self, interaction: discord.Interaction, role: discord.Role, user: discord.User):
+    async def factionlead(self, interaction: discord.Interaction, role: discord.Role, user: discord.User):
         try:
             leadrole = discord.utils.get(interaction.guild.roles, id=role.id)
             if leadrole:
@@ -183,7 +183,7 @@ class rolecommands(commands.Cog):
 
     @app_commands.guilds(SEServer)
     @app_commands.command(name="factionadd", description="Slash command to add player to faction role")
-    async def self(self, interaction: discord.Interaction, user: discord.User):
+    async def factionadd(self, interaction: discord.Interaction, user: discord.User):
         try:
             leader = await getLeader(interaction.user.id)
             if leader:
@@ -206,7 +206,7 @@ class rolecommands(commands.Cog):
 
     @app_commands.guilds(SEServer)
     @app_commands.command(name="factionremove", description="Slash command to remove players from faction role")
-    async def self(self, interaction: discord.Interaction, user: discord.User):
+    async def factionremove(self, interaction: discord.Interaction, user: discord.User):
         try:
             leader = await getLeader(interaction.user.id)
             if leader:

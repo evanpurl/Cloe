@@ -1,4 +1,4 @@
 from database.database import getwhohasaccess
-async def whohasaccess():
-    datalist = getwhohasaccess()
-    return datalist
+async def whohasaccess(userid):
+    data = await getwhohasaccess(userid)
+    return data
