@@ -1,10 +1,8 @@
-import asyncio
-import discord
 from discord.ext import commands
 from database.database import getauthuser, getgreeting, getily, getcompliment
 import string
 
-
+# Needs manage messages permission
 class messagefunctions(commands.Cog):
 
     def __init__(self, bot):
@@ -31,7 +29,6 @@ class messagefunctions(commands.Cog):
                         await message.reply(f"{ily} {message.author.name}!")
                     elif compliment:
                         await message.reply(f"{compliment} {message.author.name}!")
-                    await asyncio.sleep(3)
 
 
 async def setup(bot):
