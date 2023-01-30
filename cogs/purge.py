@@ -5,8 +5,6 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands.errors import MissingPermissions
 
-from database.database import getmodrole
-
 
 class admincommands(commands.Cog):
 
