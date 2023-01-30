@@ -24,7 +24,7 @@ class misccommands(commands.Cog):
                         content=f"""You have been added to role {role.name}.""",
                         ephemeral=True)
             else:
-                await interaction.response.send_message(content=f"""Role {role.name} does not exist.""",
+                await interaction.response.send_message(content=f"""Role Ping does not exist.""",
                                                         ephemeral=True)
         except Exception as e:
             print(e)
@@ -43,7 +43,7 @@ class misccommands(commands.Cog):
     @app_commands.command(name="site", description="Slash command for Cloe's website page.")
     async def site(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            content=f"https://www.nitelifesoftware.com/bots/cloes-status/",
+            content=f"https://www.nitelifesoftware.com/bots/cloe",
             ephemeral=True)
 
 
