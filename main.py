@@ -1,9 +1,9 @@
 import asyncio
 import discord
-from util.load_extensions import load_extensions
+from util.load_extensions import load_extensions # Our code
 from discord.ext import commands
-from database.database import gettoken
-from database.testdbconnection import connect
+from database.database import gettoken # Our code
+from database.testdbconnection import connect # Our code
 
 
 intents = discord.Intents.default()
@@ -18,7 +18,7 @@ async def main():
     async with client:
         try:
             token = await gettoken("Cloe")
-            await connect()
+            await connect() # Tests database connection
             await load_extensions(client)
             await client.start(token[0])
         except KeyboardInterrupt:
