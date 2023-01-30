@@ -3,6 +3,7 @@ import asyncio
 import discord
 from discord import app_commands
 from discord.ext import commands
+from discord.ext.commands.errors import MissingPermissions
 
 from database.database import getmodrole
 
@@ -14,7 +15,8 @@ class admincommands(commands.Cog):
 
     @app_commands.command(name="purge", description="Admin command for Purging a channel.")
     @app_commands.checks.has_permissions(manage_messages=True)
-    async def self(self, interaction: discord.Interaction, number: int):
+    @app_commands.checks.cooldown(1, 300, key=lambda i: (i.guild.id, i.user.id))
+    async def purge(self, interaction: discord.Interaction, number: int):
         try:
             if number > 100:
                 await interaction.response.send_message(
@@ -27,6 +29,12 @@ class admincommands(commands.Cog):
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+    @purge.error
+    async def purgeerror(self, interaction: discord.Interaction, error: app_commands.AppCommandError):
+        if isinstance(error, MissingPermissions):
+            await interaction.response.send_message(content="You don't have permission to use this command.", ephemeral=True)
+        elif isinstance(error, app_commands.CommandOnCooldown):
+            await interaction.response.send_message(content=str(error), ephemeral=True)
 
 
 async def setup(bot):
