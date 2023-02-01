@@ -253,10 +253,9 @@ async def getwhohasaccess(user):
             user = c.fetchone()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
-            if user:
-                return True
-            else:
+            if not user:
                 return False
+            return user
         else:
             return 'Connection to database failed.'
     except Error as e:
@@ -300,6 +299,54 @@ async def getwelcomechannelid(serverid):
             role = c.fetchone()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
+            if not role:
+                return False
+            return role
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+async def setpingroleid(serverid, roleid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+            sql = f"UPDATE cloeservers SET pingroleid = %(pingroleid)s WHERE serverid = %(server)s;"
+            user_data = {
+                'server': serverid,
+                'pingroleid': roleid,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+async def getpingroleid(serverid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"SELECT pingroleid from cloeservers where serverid=%(serverid)s;"
+            user_data = {
+                'serverid': serverid,
+            }
+            c.execute(sql, user_data)
+            role = c.fetchone()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+            if not role:
+                return False
             return role
         else:
             return 'Connection to database failed.'
