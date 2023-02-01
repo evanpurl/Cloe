@@ -1,6 +1,4 @@
-import time, datetime
-import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 class onready(commands.Cog):
 
     def __init__(self, bot):

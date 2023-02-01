@@ -23,58 +23,6 @@ async def gettoken(botname):
     except Error as e:
         print(e)
         return e
-
-
-async def getgreeting(greeting):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            # print('Processing Greeting.')
-            c = conn.cursor()
-            sql = f"SELECT responses from greetings where greeting=%(greeting)s;"
-            user_data = {
-                'greeting': greeting,
-            }
-            c.execute(sql, user_data)
-            response = c.fetchone()
-            if not response:
-                return None
-            response = response[0].split(", ")
-            choice = random.choice(response)
-            c.close()
-            conn.close()
-            return choice
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
-async def setmodrole(role, server):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"UPDATE servers SET editrole = %(editrole)s WHERE serverid = %(server)s;"
-            user_data = {
-                'editrole': role,
-                'server': server,
-            }
-            c.execute(sql, user_data)
-            conn.commit()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
 async def setauthuser(user):
     try:
         db_config = read_db_config()
@@ -90,52 +38,6 @@ async def setauthuser(user):
             conn.commit()
             c.close()  # Closes Cursor
             conn.close()  # Closes Connection
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
-async def setsupprole(role, server):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"UPDATE servers SET supporterrole = %(supporterrole)s WHERE serverid = %(server)s;"
-            user_data = {
-                'supporterrole': role,
-                'server': server,
-            }
-            c.execute(sql, user_data)
-            conn.commit()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
-async def getmodrole(server):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"SELECT editrole from servers where serverid=%(serverid)s;"
-            user_data = {
-                'serverid': server,
-            }
-            c.execute(sql, user_data)
-            role = c.fetchone()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-            return role
         else:
             return 'Connection to database failed.'
     except Error as e:
@@ -169,29 +71,6 @@ async def getauthuser(user):
         return e
 
 
-async def getsupprole(server):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"SELECT supporterrole from servers where serverid=%(serverid)s;"
-            user_data = {
-                'serverid': server,
-            }
-            c.execute(sql, user_data)
-            role = c.fetchone()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-            return role
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
 async def setplayerrole(role, server):
     try:
         db_config = read_db_config()
@@ -199,7 +78,7 @@ async def setplayerrole(role, server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"UPDATE servers SET playerrole = %(playerrole)s WHERE serverid = %(server)s;"
+            sql = f"UPDATE cloeservers SET playerrole = %(playerrole)s WHERE serverid = %(server)s;"
             user_data = {
                 'playerrole': role,
                 'server': server,
@@ -222,7 +101,7 @@ async def getplayerrole(server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"SELECT playerrole from servers where serverid=%(serverid)s;"
+            sql = f"SELECT playerrole from cloeservers where serverid=%(serverid)s;"
             user_data = {
                 'serverid': server,
             }
@@ -245,7 +124,7 @@ async def createserver(server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"INSERT INTO servers (serverid) VALUES (%(serverid)s);"
+            sql = f"INSERT INTO cloeservers (serverid) VALUES (%(serverid)s);"
             user_data = {
                 'serverid': server,
             }
@@ -267,7 +146,7 @@ async def deleteserver(server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"DELETE FROM servers WHERE serverid = (%(serverid)s);"
+            sql = f"DELETE FROM cloeservers WHERE serverid = (%(serverid)s);"
             user_data = {
                 'serverid': server,
             }
@@ -281,6 +160,31 @@ async def deleteserver(server):
         print(e)
         return e
 
+async def getgreeting(greeting):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            # print('Processing Greeting.')
+            c = conn.cursor()
+            sql = f"SELECT responses from greetings where greeting=%(greeting)s;"
+            user_data = {
+                'greeting': greeting,
+            }
+            c.execute(sql, user_data)
+            response = c.fetchone()
+            if not response:
+                return None
+            response = response[0].split(", ")
+            choice = random.choice(response)
+            c.close()
+            conn.close()
+            return choice
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
 
 async def getily(ily):
     try:
@@ -334,56 +238,6 @@ async def getcompliment(compliment):
     except Exception as e:
         print(e)
         return e
-
-
-# ----------------------- SE Section
-
-async def getLeader(userid):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-            sql = f"SELECT roleid from spaceengineers where userid=%(userid)s;"
-            user_data = {
-                'userid': userid,
-            }
-            c.execute(sql, user_data)
-            response = c.fetchone()
-            if not response:
-                return None
-            c.close()
-            conn.close()
-            return response
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
-async def setLeader(roleid, userid):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"INSERT INTO spaceengineers (userid, roleid) VALUES (%(userid)s, %(roleid)s);"
-            user_data = {
-                'roleid': roleid,
-                'userid': userid,
-            }
-            c.execute(sql, user_data)
-            conn.commit()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
 async def getwhohasaccess(user):
     try:
         db_config = read_db_config()
@@ -403,6 +257,50 @@ async def getwhohasaccess(user):
                 return True
             else:
                 return False
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+async def setwelcomechannelid(serverid, channelid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+            sql = f"UPDATE cloeservers SET welcomechannelid = %(channelid)s WHERE serverid = %(server)s;"
+            user_data = {
+                'server': serverid,
+                'channelid': channelid,
+            }
+            c.execute(sql, user_data)
+            conn.commit()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
+
+async def getwelcomechannelid(serverid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+
+            sql = f"SELECT welcomechannelid from cloeservers where serverid=%(serverid)s;"
+            user_data = {
+                'serverid': serverid,
+            }
+            c.execute(sql, user_data)
+            role = c.fetchone()
+            c.close()  # Closes Cursor
+            conn.close()  # Closes Connection
+            return role
         else:
             return 'Connection to database failed.'
     except Error as e:
