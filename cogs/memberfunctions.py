@@ -24,8 +24,8 @@ class memberfunctions(commands.Cog):
             if channel:
                 await channel.send(embed=userembed(self.bot, member))
             roleid = await getplayerrole(member.guild.id)
-            if roleid:
-                role = discord.utils.get(member.guild.roles, id=roleid[0])
+            role = discord.utils.get(member.guild.roles, id=roleid[0])
+            if role:
                 await member.add_roles(role)
         except Exception as e:
             print(e)
@@ -33,8 +33,8 @@ class memberfunctions(commands.Cog):
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         wchannel = await getwelcomechannelid(serverid=member.guild.id)
-        if wchannel:
-            channel = discord.utils.get(member.guild.channels, id=wchannel[0])
+        channel = discord.utils.get(member.guild.channels, id=wchannel[0])
+        if channel:
             await channel.send(f"Goodbye {member.mention} :(")
 
 
