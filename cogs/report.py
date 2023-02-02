@@ -14,16 +14,17 @@ class reportcmd(commands.Cog):
     async def report(self, interaction: discord.Interaction, user: discord.User) -> None:
         overwrites = {
             interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            interaction.user: discord.PermissionOverwrite(read_messages=True)}
+            interaction.user: discord.PermissionOverwrite(read_messages=True),
+            interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
 
         reportcat = discord.utils.get(interaction.guild.categories, name="Reports")
         if reportcat:
-            reportchan = await interaction.guild.create_text_channel(f"Report number", category=reportcat, overwrites=overwrites, reason=f"User {interaction.user.name} reported {user.name}")
+            reportchan = await interaction.guild.create_text_channel(f"Report {interaction.user.name}", category=reportcat, overwrites=overwrites, reason=f"User {interaction.user.name} reported {user.name}")
             await interaction.response.send_message(content=f"Report created in {reportchan.mention}", ephemeral=True)
             await reportchan.send(content=f"{interaction.user.mention} reported {user.name}. Please lay out any evidence you have here!")
 
         else:
-            reportchan = await interaction.guild.create_text_channel(f"Report number", overwrites=overwrites, reason=f"User {interaction.user.name} reported {user.name}")
+            reportchan = await interaction.guild.create_text_channel(f"Report {interaction.user.name}", overwrites=overwrites, reason=f"User {interaction.user.name} reported {user.name}")
             await interaction.response.send_message(content=f"Report created in {reportchan.mention}", ephemeral=True)
             await reportchan.send(content=f"{interaction.user.mention} reported {user.name}. Please lay out any evidence you have here!")
 

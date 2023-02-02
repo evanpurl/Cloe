@@ -78,7 +78,7 @@ async def setplayerrole(role, server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"UPDATE cloeservers SET playerrole = %(playerrole)s WHERE serverid = %(server)s;"
+            sql = f"UPDATE cloe_servers SET playerrole = %(playerrole)s WHERE serverid = %(server)s;"
             user_data = {
                 'playerrole': role,
                 'server': server,
@@ -101,7 +101,7 @@ async def getplayerrole(server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"SELECT playerrole from cloeservers where serverid=%(serverid)s;"
+            sql = f"SELECT playerrole from cloe_servers where serverid=%(serverid)s;"
             user_data = {
                 'serverid': server,
             }
@@ -124,7 +124,7 @@ async def createserver(server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"INSERT INTO cloeservers (serverid) VALUES (%(serverid)s);"
+            sql = f"INSERT INTO cloe_servers (serverid) VALUES (%(serverid)s);"
             user_data = {
                 'serverid': server,
             }
@@ -146,7 +146,7 @@ async def deleteserver(server):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"DELETE FROM cloeservers WHERE serverid = (%(serverid)s);"
+            sql = f"DELETE FROM cloe_servers WHERE serverid = (%(serverid)s);"
             user_data = {
                 'serverid': server,
             }
@@ -238,37 +238,13 @@ async def getcompliment(compliment):
     except Exception as e:
         print(e)
         return e
-async def getwhohasaccess(user):
-    try:
-        db_config = read_db_config()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"SELECT userid from access where userid=%(userid)s;"
-            user_data = {
-                'userid': user,
-            }
-            c.execute(sql, user_data)
-            user = c.fetchone()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-            if not user:
-                return False
-            return user
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
 async def setwelcomechannelid(serverid, channelid):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
             c = conn.cursor()
-            sql = f"UPDATE cloeservers SET welcomechannelid = %(channelid)s WHERE serverid = %(server)s;"
+            sql = f"UPDATE cloe_servers SET welcomechannelid = %(channelid)s WHERE serverid = %(server)s;"
             user_data = {
                 'server': serverid,
                 'channelid': channelid,
@@ -291,7 +267,7 @@ async def getwelcomechannelid(serverid):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"SELECT welcomechannelid from cloeservers where serverid=%(serverid)s;"
+            sql = f"SELECT welcomechannelid from cloe_servers where serverid=%(serverid)s;"
             user_data = {
                 'serverid': serverid,
             }
@@ -314,7 +290,7 @@ async def setpingroleid(serverid, roleid):
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
             c = conn.cursor()
-            sql = f"UPDATE cloeservers SET pingroleid = %(pingroleid)s WHERE serverid = %(server)s;"
+            sql = f"UPDATE cloe_servers SET pingroleid = %(pingroleid)s WHERE serverid = %(server)s;"
             user_data = {
                 'server': serverid,
                 'pingroleid': roleid,
@@ -337,7 +313,7 @@ async def getpingroleid(serverid):
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"SELECT pingroleid from cloeservers where serverid=%(serverid)s;"
+            sql = f"SELECT pingroleid from cloe_servers where serverid=%(serverid)s;"
             user_data = {
                 'serverid': serverid,
             }
