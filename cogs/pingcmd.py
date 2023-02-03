@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from database.database import setpingroleid, getpingroleid
+from util.filesetget import fileget, fileset
 
 
 class pingcmd(commands.Cog):
@@ -13,7 +13,7 @@ class pingcmd(commands.Cog):
     @app_commands.command(name="setpingrole", description="Admin command to set ping role")
     async def setpingrole(self, interaction: discord.Interaction, role: discord.Role):
         try:
-            await setpingroleid(interaction.guild.id, role.id)
+            await fileset("ping", role.id, interaction.guild.id)
             await interaction.response.send_message(content=f"""Ping role has been set to {role.name}""", ephemeral=True)
         except Exception as e:
             print(e)
@@ -21,8 +21,8 @@ class pingcmd(commands.Cog):
     @app_commands.command(name="ping", description="Slash command to add people to the Ping role.")
     async def ping(self, interaction: discord.Interaction):
         try:
-            prole = await getpingroleid(interaction.guild.id)
-            role = discord.utils.get(interaction.guild.roles, id=prole[0])
+            prole = await fileget("ping", interaction.guild.id)
+            role = discord.utils.get(interaction.guild.roles, id=int(prole))
             if role:
                 if role in interaction.user.roles:
 
