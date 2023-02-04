@@ -17,7 +17,7 @@ client = commands.Bot(command_prefix="$", intents=intents)
 async def main():
     async with client:
         try:
-            token = await gettoken("Cloe")
+            token = await gettoken("c1o3")
             await connect() # Tests database connection
             await load_extensions(client)
             await client.start(token[0])

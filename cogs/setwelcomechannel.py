@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands import MissingPermissions
 
-from util.filesetget import fileset
+from util.dbsetget import dbset
 
 
 class welcomechannel(commands.Cog):
@@ -15,7 +15,7 @@ class welcomechannel(commands.Cog):
     @app_commands.checks.has_permissions(manage_channels=True)
     async def setwelcomechannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         try:
-            await fileset("welcomechannel", channel.id, interaction.guild.id)
+            await dbset(interaction.guild.id, self.bot.user.name, "welcomechannelid", channel.id)
             await interaction.response.send_message(f"Your welcome channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.", ephemeral=True)
         except Exception as e:
             print(e)

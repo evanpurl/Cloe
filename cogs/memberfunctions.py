@@ -2,7 +2,7 @@ import datetime
 
 import discord
 from discord.ext import commands
-from util.filesetget import fileget
+from util.dbsetget import dbget
 
 
 def userembed(bot, user):
@@ -19,21 +19,24 @@ class memberfunctions(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         try:
-            wchannel = await fileget("welcomechannel", member.guild.id)
-            channel = discord.utils.get(member.guild.channels, id=int(wchannel))
+            wchannel = await dbget(member.guild.id, self.bot.user.name, "welcomechannelid")
+            channel = discord.utils.get(member.guild.channels, id=wchannel[0])
             if channel:
                 await channel.send(embed=userembed(self.bot, member))
-            roleid = await fileget("defaultrole", member.guild.id)
-            role = discord.utils.get(member.guild.roles, id=int(roleid))
+            roleid = await dbget(member.guild.id, self.bot.user.name, "defaultroleid")
+            role = discord.utils.get(member.guild.roles, id=roleid[0])
             if role:
                 await member.add_roles(role)
-        except Exception as e:
-            print(e)
+        except discord.Forbidden:
+            wchannel = await dbget(member.guild.id, self.bot.user.name, "welcomechannelid")
+            channel = discord.utils.get(member.guild.channels, id=wchannel[0])
+            if channel:
+                await channel.send(content=f"""Unable to set your role, make sure my role is higher than the role you're trying to add!""")
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        wchannel = await fileget("welcomechannel", member.guild.id)
-        channel = discord.utils.get(member.guild.channels, id=int(wchannel))
+        wchannel = await dbget(member.guild.id, self.bot.user.name, "welcomechannelid")
+        channel = discord.utils.get(member.guild.channels, id=wchannel[0])
         if channel:
             await channel.send(f"Goodbye {member.mention} :(")
 

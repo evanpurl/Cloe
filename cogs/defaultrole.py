@@ -2,7 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.ext.commands.errors import MissingPermissions
-from util.filesetget import fileset
+from util.dbsetget import dbset
 
 
 
@@ -16,7 +16,7 @@ class defaultrole(commands.Cog):
     @app_commands.command(name="setdefaultrole", description="Slash command for setting your server's Default role.")
     async def setdefaultrole(self, interaction: discord.Interaction, role: discord.Role):
         try:
-            await fileset("defaultrole", role.id, interaction.guild.id)
+            await dbset(interaction.guild.id, self.bot.user.name, "defaultroleid", role.id)
             await interaction.response.send_message(content=f"""You server's default role has been set to {role.name}""", ephemeral=True)
         except Exception as e:
             print(e)
