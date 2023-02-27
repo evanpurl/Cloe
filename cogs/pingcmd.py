@@ -9,15 +9,6 @@ class pingcmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.checks.has_permissions(manage_roles=True)
-    @app_commands.command(name="setpingrole", description="Admin command to set ping role")
-    async def setpingrole(self, interaction: discord.Interaction, role: discord.Role):
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "pingroleid", role.id)
-            await interaction.response.send_message(content=f"""Ping role has been set to {role.name}""", ephemeral=True)
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
     @app_commands.command(name="ping", description="Slash command to add people to the Ping role.")
     async def ping(self, interaction: discord.Interaction):
         try:
