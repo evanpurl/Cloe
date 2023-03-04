@@ -1,4 +1,5 @@
 from discord.ext import commands
+
 class onready(commands.Cog):
 
     def __init__(self, bot):
