@@ -18,12 +18,6 @@ class misccommands(commands.Cog):
             **I'll add to this later.**""",
             ephemeral=True)
 
-    @app_commands.command(name="site", description="Slash command for Cloe's website page.")
-    async def site(self, interaction: discord.Interaction):
-        await interaction.response.send_message(
-            content=f"https://www.nitelifesoftware.com/bots/cloe",
-            ephemeral=True)
-
 
 async def setup(bot):
     await bot.add_cog(misccommands(bot))

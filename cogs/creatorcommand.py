@@ -12,7 +12,7 @@ class creatorcmd(commands.Cog):
     async def creator(self, interaction: discord.Interaction):
         try:
             await interaction.response.send_message(
-            content=f"""{interaction.user.mention}, {self.bot.user.name} was created and is hosted by Nite Life Software using their discord bot creation service. For more information head to https://www.nitelifesoftware.com/bot-service!""",
+            content=f"""{interaction.user.mention}, {self.bot.user.name} was created by Purls, and is hosted by Wyvern server hosting. Want your own bot? Head to https://discord.gg/Wdunj8yCxZ""",
             ephemeral=True)
         except Exception as e:
             print(e)
