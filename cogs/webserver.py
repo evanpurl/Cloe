@@ -3,6 +3,11 @@ from aiohttp import web
 from discord.ext import commands
 
 
+def html_response(document):
+    s = open(document, "r")
+    return web.Response(text=s.read(), content_type='text/html')
+
+
 class ServerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -17,9 +22,12 @@ class ServerCog(commands.Cog):
         await self.bot.wait_until_ready()
         await self.server.start()
 
+    routes = web.RouteTableDef()
+
     @server.add_route(path="/", method="GET", cog="ServerCog")
     async def home(self, request):
-        return web.json_response(data={f"{self.bot.user.name}": "Online"}, status=200)
+        return html_response('web/index.html')
+
 
 async def setup(bot):
     await bot.add_cog(ServerCog(bot))
