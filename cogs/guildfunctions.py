@@ -9,7 +9,7 @@ class guildfunctions(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await createserver(guild.id, self.bot.user.name)  # Creates server row in database
+        await createserver(guild.id, self.bot.user.name, guild.name)  # Creates server row in database
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
