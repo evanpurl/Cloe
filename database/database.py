@@ -23,16 +23,17 @@ async def gettoken(botname):
         print(e)
         return e
 
-async def createserver(server, bot):
+async def createserver(server, bot, servername):
     try:
         db_config = read_db_config()
         conn = MySQLConnection(**db_config)
         if conn.is_connected():
             c = conn.cursor()
 
-            sql = f"INSERT IGNORE INTO {bot} (serverid) VALUES (%(serverid)s);"
+            sql = f"INSERT IGNORE INTO {bot} (serverid, servername) VALUES (%(serverid)s, %(servername)s);"
             user_data = {
                 'serverid': server,
+                'servername': servername,
             }
             c.execute(sql, user_data)
             conn.commit()
