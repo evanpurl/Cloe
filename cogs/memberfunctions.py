@@ -6,7 +6,9 @@ from util.dbsetget import dbget
 
 
 def userembed(bot, user):
-    embed = discord.Embed(title="**Welcome!**", description=f"Welcome to the server {user.mention}! Please make sure to review the rules!", color=discord.Color.blue(), timestamp=datetime.datetime.now())
+    embed = discord.Embed(title="**Welcome!**", description=f"Welcome to the server {user.mention}! Please make sure "
+                                                            f"to review the rules!", color=discord.Color.blue(),
+                          timestamp=datetime.datetime.now())
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
     return embed
 
