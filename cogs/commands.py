@@ -1,8 +1,8 @@
-import os
-
 from discord.ext import commands
 from util.accessutils import whohasaccess
-class cloecommands(commands.Cog):
+
+
+class bcommands(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -19,5 +19,6 @@ class cloecommands(commands.Cog):
             else:
                 await ctx.send(f"You can't run this command.")
 
+
 async def setup(bot):
-    await bot.add_cog(cloecommands(bot))
+    await bot.add_cog(bcommands(bot))
