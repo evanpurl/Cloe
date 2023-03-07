@@ -26,9 +26,7 @@ class misccommands(commands.Cog):
         try:
             if await whohasaccess(interaction.user.id):
                 await dbsetbotnetwork(bot.name, bot.id, connection, owner.id)
-                await interaction.response.send_message(content=f"{bot.name} with connection address {connection} and "
-                                                                f"owner {owner.name} has been added to the bot "
-                                                                f"network.", ephemeral=True)
+                await interaction.response.send_message(content=f"{bot.name} with connection address {connection} and owner {owner.name} has been added to the bot network.", ephemeral=True)
             else:
                 await interaction.response.send_message(content=f"You can't run this command.", ephemeral=True)
         except Exception as e:
