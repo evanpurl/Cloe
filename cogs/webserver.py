@@ -13,7 +13,11 @@ class ServerCog(commands.Cog):
 
     async def webserver(self):
         async def handler(request):
-            return web.json_response(data={self.bot.user.name: self.bot.user.avatar.url}, status=200)
+            if not self.bot.user.avatar:
+                pfp = 'nothing.png'
+            else:
+                pfp = self.bot.user.avatar.url
+            return web.json_response(data={self.bot.user.name: pfp}, status=200)
 
         app = web.Application()
         app.router.add_get('/', handler)
