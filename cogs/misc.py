@@ -25,6 +25,7 @@ class misccommands(commands.Cog):
     async def addbot(self, interaction: discord.Interaction, bot: discord.User, connection: str, owner: discord.User):
         try:
             if await whohasaccess(interaction.user.id):
+                await interaction.response.defer(ephemeral=True)
                 await dbsetbotnetwork(bot.name, bot.id, connection, owner.id)
                 await interaction.response.send_message(content=f"{bot.name} with connection address {connection} and "
                                                                 f"owner {owner.name} has been added to the bot "
