@@ -26,7 +26,7 @@ class defrole(commands.Cog):
 
     @app_commands.checks.has_permissions(manage_roles=True)
     @app_commands.command(name="resetdefaultrole", description="Slash command for resetting your server's Default role.")
-    async def resetdefaultrole(self, interaction: discord.Interaction, role: discord.Role):
+    async def resetdefaultrole(self, interaction: discord.Interaction):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "defaultroleid", 0)
             await interaction.response.send_message(f"Default role config has been reset.", ephemeral=True)

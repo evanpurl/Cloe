@@ -63,5 +63,6 @@ class pingcmd(commands.Cog):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
 
+
 async def setup(bot):
     await bot.add_cog(pingcmd(bot))

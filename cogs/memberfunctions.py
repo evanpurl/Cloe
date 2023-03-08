@@ -59,7 +59,7 @@ class memberfunctions(commands.Cog):
 
     @app_commands.checks.has_permissions(manage_channels=True)
     @app_commands.command(name="resetwelcomechannel", description="Command to reset your server's welcome channel.")
-    async def resetwelcomechannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+    async def resetwelcomechannel(self, interaction: discord.Interaction):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "welcomechannelid", 0)
             await interaction.response.send_message(f"Welcome channel config has been reset.", ephemeral=True)
