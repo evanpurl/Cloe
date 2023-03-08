@@ -15,18 +15,18 @@ class ticketcmd(commands.Cog):
             interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
             interaction.user: discord.PermissionOverwrite(read_messages=True),
             interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-        existticket = discord.utils.get(interaction.guild.categories, name=f"ticket-{interaction.user.name}")
+        existticket = discord.utils.get(interaction.guild.channels, name=f"ticket-{interaction.user.name.lower()}{interaction.user.discriminator}")
         if existticket:
             await interaction.response.send_message(content=f"You already have an existing ticket you silly goose. {existticket.mention}", ephemeral=True)
         else:
-            ticketcat = discord.utils.get(interaction.guild.channels, name="Tickets")
+            ticketcat = discord.utils.get(interaction.guild.categories, name="Tickets")
             if ticketcat:
-                ticketchan = await interaction.guild.create_text_channel(f"ticket {interaction.user.name}", category=ticketcat, overwrites=overwrites)
+                ticketchan = await interaction.guild.create_text_channel(f"ticket {interaction.user.name}{interaction.user.discriminator}", category=ticketcat, overwrites=overwrites)
                 await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!", ephemeral=True)
                 await ticketchan.send(content=f"Hey there {interaction.user.mention}! Let us know what you need below!")
 
             else:
-                ticketchan = await interaction.guild.create_text_channel(f"ticket {interaction.user.name}", overwrites=overwrites)
+                ticketchan = await interaction.guild.create_text_channel(f"ticket {interaction.user.name}{interaction.user.discriminator}", overwrites=overwrites)
                 await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!", ephemeral=True)
                 await ticketchan.send(content=f"Hey there {interaction.user.mention}! Let us know what you need below!")
 
