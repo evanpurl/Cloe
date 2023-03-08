@@ -1,8 +1,11 @@
 import datetime
 
 import discord
+from discord import app_commands
 from discord.ext import commands
-from util.dbsetget import dbget
+from util.dbsetget import dbget, dbset
+
+"needs welcomechannelid in db"
 
 
 def userembed(bot, user):
@@ -41,6 +44,23 @@ class memberfunctions(commands.Cog):
         channel = discord.utils.get(member.guild.channels, id=wchannel[0])
         if channel:
             await channel.send(f"Goodbye {member.mention} :(")
+
+    @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.command(name="setwelcomechannel", description="Command to set your server's welcome channel.")
+    async def welcomechannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "welcomechannelid", channel.id)
+            await interaction.response.send_message(
+                f"Your welcome channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @welcomechannel.error
+    async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
+        await interaction.response.send_message(content=error,
+                                                ephemeral=True)
 
 
 async def setup(bot):

@@ -1,6 +1,8 @@
 from discord.ext import commands
 from database.database import createserver, deleteserver
 
+"Needs serverid, servername in db"
+
 
 class guildfunctions(commands.Cog):
 

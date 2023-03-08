@@ -8,7 +8,6 @@ class patcmd(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.checks.has_permissions(manage_roles=True)
     @app_commands.command(name="pat", description="Command to get patted")
     async def pat(self, interaction: discord.Interaction, user: discord.User = None):
         try:

@@ -1,6 +1,7 @@
 from mysql.connector import MySQLConnection, Error
 from database.python_mysql_dbconfig import read_db_config
 
+
 async def gettoken(botname):
     try:
         db_config = read_db_config()
@@ -22,6 +23,7 @@ async def gettoken(botname):
     except Error as e:
         print(e)
         return e
+
 
 async def createserver(server, bot, servername):
     try:
