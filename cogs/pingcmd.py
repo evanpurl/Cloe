@@ -46,8 +46,19 @@ class pingcmd(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.checks.has_permissions(manage_roles=True)
+    @app_commands.command(name="resetpingrole", description="Slash command to reset the Ping role.")
+    async def resetping(self, interaction: discord.Interaction):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "pingroleid", 0)
+            await interaction.response.send_message(f"Ping Role config has been reset.", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
     @setping.error
     @ping.error
+    @resetping.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)

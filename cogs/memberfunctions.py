@@ -57,7 +57,18 @@ class memberfunctions(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.command(name="resetwelcomechannel", description="Command to reset your server's welcome channel.")
+    async def resetwelcomechannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "welcomechannelid", 0)
+            await interaction.response.send_message(f"Welcome channel config has been reset.", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
     @welcomechannel.error
+    @resetwelcomechannel.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)

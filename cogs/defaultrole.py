@@ -24,7 +24,18 @@ class defrole(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.checks.has_permissions(manage_roles=True)
+    @app_commands.command(name="resetdefaultrole", description="Slash command for resetting your server's Default role.")
+    async def resetdefaultrole(self, interaction: discord.Interaction, role: discord.Role):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "defaultroleid", 0)
+            await interaction.response.send_message(f"Default role config has been reset.", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
     @defaultrole.error
+    @resetdefaultrole.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
