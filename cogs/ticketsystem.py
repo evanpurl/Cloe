@@ -20,89 +20,6 @@ def ticketembed(bot):
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
     return embed
 
-
-class Ticketmodal(ui.Modal, title="Cloe's Ticketing System"):
-    issue = ui.TextInput(label='What are you looking for today?', style=discord.TextStyle.paragraph, max_length=1500)
-
-    async def on_submit(self, interaction: discord.Interaction):
-        overwrites = {
-            interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            interaction.user: discord.PermissionOverwrite(read_messages=True),
-            interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-        ticketcat = discord.utils.get(interaction.guild.categories, name="Tickets")
-        if ticketcat:
-            ticketchan = await interaction.guild.create_text_channel(
-                f"ticket-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
-                overwrites=overwrites)
-            await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
-                                                    ephemeral=True)
-            await ticketchan.send(
-                content=f"{interaction.user.mention} created a ticket: \n \n ```Reason: {self.issue}```")
-            await ticketchan.send(
-                embed=ticketembed(interaction.client),
-                view=ticketbuttonpanel())
-
-            def check(m: discord.Message):  # m = discord.Message.
-                return m.author.id == interaction.user.id and m.channel.id == interaction.channel.id
-
-            try:
-                msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
-            except asyncio.TimeoutError:
-                lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
-                logchannel = discord.utils.get(interaction.guild.channels,
-                                               id=lchanid[0])
-                if logchannel:
-                    transcript = await chat_exporter.export(
-                        ticketchan,
-                    )
-                    if transcript is None:
-                        return
-
-                    transcript_file = discord.File(
-                        io.BytesIO(transcript.encode()),
-                        filename=f"transcript-{ticketchan.name}.html",
-                    )
-
-                    await logchannel.send(file=transcript_file)
-
-                await ticketchan.delete()
-
-        else:
-            ticketchan = await interaction.guild.create_text_channel(
-                f"ticket-{interaction.user.name}{interaction.user.discriminator}", overwrites=overwrites)
-            await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
-                                                    ephemeral=True)
-            await ticketchan.send(
-                content=f"{interaction.user.mention} created a ticket: \n \n ```Reason: {self.issue}```")
-            await ticketchan.send(
-                embed=ticketembed(interaction.client),
-                view=ticketbuttonpanel())
-
-            def check(m: discord.Message):  # m = discord.Message.
-                return m.author.id == interaction.user.id and m.channel.id == interaction.channel.id
-
-            try:
-                msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
-            except asyncio.TimeoutError:
-                lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
-                logchannel = discord.utils.get(interaction.guild.channels,
-                                               id=lchanid[0])
-                if logchannel:
-                    transcript = await chat_exporter.export(
-                        ticketchan,
-                    )
-                    if transcript is None:
-                        return
-
-                    transcript_file = discord.File(
-                        io.BytesIO(transcript.encode()),
-                        filename=f"transcript-{ticketchan.name}.html",
-                    )
-
-                    await logchannel.send(file=transcript_file)
-                await ticketchan.delete()
-
-
 class ticketbuttonpanel(discord.ui.View):
 
     def __init__(self):
@@ -187,7 +104,82 @@ class ticketbutton(discord.ui.View):
                     content=f"You already have an existing ticket you silly goose. {existticket.mention}",
                     ephemeral=True)
             else:
-                await interaction.response.send_modal(Ticketmodal())
+                overwrites = {
+                    interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                    interaction.user: discord.PermissionOverwrite(read_messages=True),
+                    interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
+                ticketcat = discord.utils.get(interaction.guild.categories, name="Tickets")
+                if ticketcat:
+                    ticketchan = await interaction.guild.create_text_channel(
+                        f"ticket-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
+                        overwrites=overwrites)
+                    await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
+                                                            ephemeral=True)
+                    await ticketchan.send(
+                        content=f"{interaction.user.mention} created a ticket!")
+                    await ticketchan.send(
+                        embed=ticketembed(interaction.client),
+                        view=ticketbuttonpanel())
+
+                    def check(m: discord.Message):  # m = discord.Message.
+                        return m.author.id == interaction.user.id and m.channel.id == interaction.channel.id
+
+                    try:
+                        msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
+                    except asyncio.TimeoutError:
+                        lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
+                        logchannel = discord.utils.get(interaction.guild.channels,
+                                                       id=lchanid[0])
+                        if logchannel:
+                            transcript = await chat_exporter.export(
+                                ticketchan,
+                            )
+                            if transcript is None:
+                                return
+
+                            transcript_file = discord.File(
+                                io.BytesIO(transcript.encode()),
+                                filename=f"transcript-{ticketchan.name}.html",
+                            )
+
+                            await logchannel.send(file=transcript_file)
+
+                        await ticketchan.delete()
+
+                else:
+                    ticketchan = await interaction.guild.create_text_channel(
+                        f"ticket-{interaction.user.name}{interaction.user.discriminator}", overwrites=overwrites)
+                    await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
+                                                            ephemeral=True)
+                    await ticketchan.send(
+                        content=f"{interaction.user.mention} created a ticket!")
+                    await ticketchan.send(
+                        embed=ticketembed(interaction.client),
+                        view=ticketbuttonpanel())
+
+                    def check(m: discord.Message):  # m = discord.Message.
+                        return m.author.id == interaction.user.id and m.channel.id == interaction.channel.id
+
+                    try:
+                        msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
+                    except asyncio.TimeoutError:
+                        lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
+                        logchannel = discord.utils.get(interaction.guild.channels,
+                                                       id=lchanid[0])
+                        if logchannel:
+                            transcript = await chat_exporter.export(
+                                ticketchan,
+                            )
+                            if transcript is None:
+                                return
+
+                            transcript_file = discord.File(
+                                io.BytesIO(transcript.encode()),
+                                filename=f"transcript-{ticketchan.name}.html",
+                            )
+
+                            await logchannel.send(file=transcript_file)
+                        await ticketchan.delete()
         except Exception as e:
             print(e)
 
