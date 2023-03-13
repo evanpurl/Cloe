@@ -122,7 +122,7 @@ class ticketbutton(discord.ui.View):
                         view=ticketbuttonpanel())
 
                     def check(m: discord.Message):  # m = discord.Message.
-                        return m.author.id == interaction.user.id and m.channel.id == interaction.channel.id
+                        return m.author.id == interaction.user.id and m.channel.id == ticketchan.id
 
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
@@ -158,7 +158,7 @@ class ticketbutton(discord.ui.View):
                         view=ticketbuttonpanel())
 
                     def check(m: discord.Message):  # m = discord.Message.
-                        return m.author.id == interaction.user.id and m.channel.id == interaction.channel.id
+                        return m.author.id == interaction.user.id and m.channel.id == ticketchan.id
 
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
