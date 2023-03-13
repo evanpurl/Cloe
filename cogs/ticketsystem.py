@@ -216,7 +216,7 @@ class ticketcmd(commands.Cog):
 
         except Exception as e:
             print(e)
-        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.checks.has_permissions(manage_channels=True)
     @app_commands.command(name="resetmessagechannel", description="Command to reset your server's message log channel.")
