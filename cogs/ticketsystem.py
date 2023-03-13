@@ -5,7 +5,7 @@ import chat_exporter
 import discord
 from discord import app_commands, ui
 from discord.ext import commands
-from util.dbsetget import dbget
+from util.dbsetget import dbget, dbset
 
 timeout = 300  # seconds
 
@@ -207,11 +207,41 @@ class ticketcmd(commands.Cog):
 
     @commands.has_permissions(manage_roles=True)
     @app_commands.command(name="ticket", description="Command used by admin to create the ticket message.")
-    async def cloeticket(self, interaction: discord.Interaction) -> None:
+    async def ticket(self, interaction: discord.Interaction) -> None:
         try:
             await interaction.response.send_message(embed=ticketmessageembed(self.bot), view=ticketbutton())
         except Exception as e:
             print(e)
+
+    @commands.has_permissions(manage_roles=True)
+    @app_commands.command(name="setticketchannel", description="Command used by admin to set the ticket log channel.")
+    async def setticketchannel(self, interaction: discord.Interaction, channel: discord.TextChannel) -> None:
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", channel.id)
+            await interaction.response.send_message(
+                f"Your ticket log channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                ephemeral=True)
+
+        except Exception as e:
+            print(e)
+        await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.command(name="resetmessagechannel", description="Command to reset your server's message log channel.")
+    async def resetmessagechannel(self, interaction: discord.Interaction):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", 0)
+            await interaction.response.send_message(f"Message log channel config has been reset.", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @setticketchannel.error
+    @resetmessagechannel.error
+    @ticket.error
+    async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
+        await interaction.response.send_message(content=error,
+                                                ephemeral=True)
 
 
 async def setup(bot):
