@@ -6,12 +6,12 @@ from discord.ext import commands
 
 def reviewembed(bot, user, botmade, details, rating):
     star = "⭐"
-    embed = discord.Embed(title=f"**Review from {user.mention}**",
+    embed = discord.Embed(title=f"**Review from {user}**",
                           description=f"Created using {bot.user.mention}'s review system.",
                           color=discord.Color.blue(),
                           timestamp=datetime.datetime.now())
-    if not isinstance(rating, int):
-        rate = 5
+    if not isinstance(int(rating), int):
+        rate = 5 * star
     else:
         rate = rating * star
     embed.add_field(name="Rating:", value=rate)
