@@ -30,8 +30,9 @@ class Reviewmodal(ui.Modal, title="Purls' Bot Review."):
         await interaction.response.send_message(content="Review submitted!", ephemeral=True)
         reviewchan = 1085335105733673071
         reviewchannel = discord.utils.get(interaction.guild.channels, id=reviewchan)
-        await reviewchannel.send(
-            embed=reviewembed(interaction.client, interaction.user, self.whatbot, self.details, int(self.rating)))
+        if reviewchannel:
+            await reviewchannel.send(
+                embed=reviewembed(interaction.client, interaction.user, self.whatbot, self.details, int(self.rating)))
 
 
 class reviewbutton(discord.ui.View):
