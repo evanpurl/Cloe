@@ -22,7 +22,7 @@ class Reviewmodal(ui.Modal, title="Purls' Bot Review."):
                           placeholder="(1-5)")
     whatbot = ui.TextInput(label='What bot was made for you?', style=discord.TextStyle.short,
                            max_length=45, placeholder="(bot)")
-    details = ui.TextInput(label='Any details you would like to share about your bot, or the service as a whole?',
+    details = ui.TextInput(label='Any details you want to share on the service?',
                            style=discord.TextStyle.paragraph,
                            max_length=1000, placeholder="(details)")
 
