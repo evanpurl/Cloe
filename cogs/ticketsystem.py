@@ -186,7 +186,7 @@ class ticketbutton(discord.ui.View):
 
 def ticketmessageembed(bot):
     embed = discord.Embed(title="**Tickets**",
-                          description=f"If you are interested in my services, click the button below!",
+                          description=f"If you are interested in my services, or need help with an existing one, click the button below!",
                           color=discord.Color.blue(),
                           timestamp=datetime.datetime.now())
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
