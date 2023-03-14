@@ -13,7 +13,7 @@ def reviewembed(bot, user, botmade, details, rating):
     if not isinstance(int(rating.value), int):
         rate = 5 * star
     else:
-        rate = rating.value * star
+        rate = int(rating.value) * star
     embed.add_field(name="Rating:", value=rate)
     embed.add_field(name="Bot:", value=botmade)
     embed.add_field(name="Details:", value=details)
