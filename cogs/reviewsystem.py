@@ -10,7 +10,11 @@ def reviewembed(bot, user, botmade, details, rating):
                           description=f"Created using {bot.user.mention}'s review system.",
                           color=discord.Color.blue(),
                           timestamp=datetime.datetime.now())
-    embed.add_field(name="Rating:", value=rating * star)
+    if not isinstance(rating, int):
+        rate = 5
+    else:
+        rate = rating * star
+    embed.add_field(name="Rating:", value=rate)
     embed.add_field(name="Bot:", value=botmade)
     embed.add_field(name="Details:", value=details)
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
@@ -24,15 +28,18 @@ class Reviewmodal(ui.Modal, title="Purls' Bot Review."):
                            max_length=45, placeholder="(bot)")
     details = ui.TextInput(label='Any details you want to share on the service?',
                            style=discord.TextStyle.paragraph,
-                           max_length=1000, placeholder="(details)")
+                           max_length=300, placeholder="(details)")
 
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message(content="Review submitted!", ephemeral=True)
-        reviewchan = 1085335105733673071
-        reviewchannel = discord.utils.get(interaction.guild.channels, id=reviewchan)
-        if reviewchannel:
-            await reviewchannel.send(
-                embed=reviewembed(interaction.client, interaction.user, self.whatbot, self.details, int(self.rating)))
+        try:
+            await interaction.response.send_message(content="Review submitted!", ephemeral=True)
+            reviewchan = 1085335105733673071
+            reviewchannel = discord.utils.get(interaction.guild.channels, id=reviewchan)
+            if reviewchannel:
+                await reviewchannel.send(
+                    embed=reviewembed(interaction.client, interaction.user, self.whatbot, self.details, self.rating))
+        except Exception as e:
+            print(e)
 
 
 class reviewbutton(discord.ui.View):
