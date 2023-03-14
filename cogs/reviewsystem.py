@@ -10,10 +10,10 @@ def reviewembed(bot, user, botmade, details, rating):
                           description=f"Created using {bot.user.mention}'s review system.",
                           color=discord.Color.blue(),
                           timestamp=datetime.datetime.now())
-    if not isinstance(int(rating), int):
+    if not isinstance(int(rating.value), int):
         rate = 5 * star
     else:
-        rate = rating * star
+        rate = rating.value * star
     embed.add_field(name="Rating:", value=rate)
     embed.add_field(name="Bot:", value=botmade)
     embed.add_field(name="Details:", value=details)
