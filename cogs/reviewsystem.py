@@ -27,6 +27,7 @@ class Reviewmodal(ui.Modal, title="Purls' Bot Review."):
                            max_length=1000, placeholder="(details)")
 
     async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message(content="Review submitted!", ephemeral=True)
         reviewchan = 1085335105733673071
         reviewchannel = discord.utils.get(interaction.guild.channels, id=reviewchan)
         await reviewchannel.send(
