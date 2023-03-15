@@ -18,7 +18,7 @@ class messagefunctions(commands.Cog):
             return
         msg = message.content.lower().translate(str.maketrans('', '', string.punctuation)).split(" ")
         for substring in msg:
-            if substring == "cloe" or "c1o3":  # Trigger word
+            if substring == "cloe":  # Trigger word
                 msg.remove(substring)
                 msg = " ".join(msg)
                 response = await getgreeting(msg)
