@@ -8,8 +8,8 @@ from util.dbsetget import dbget, dbset
 "needs welcomechannelid in db"
 
 
-def userembed(bot, user):
-    embed = discord.Embed(title="**Welcome!**", description=f"Welcome to the server {user.mention}! Please make sure "
+def userembed(bot, user, server):
+    embed = discord.Embed(title="**Welcome!**", description=f"Welcome to {server.name} {user.mention}! Please make sure "
                                                             f"to review the rules!", color=discord.Color.blue(),
                           timestamp=datetime.datetime.now())
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
@@ -27,7 +27,7 @@ class memberfunctions(commands.Cog):
             wchannel = await dbget(member.guild.id, self.bot.user.name, "welcomechannelid")
             channel = discord.utils.get(member.guild.channels, id=wchannel[0])
             if channel:
-                await channel.send(embed=userembed(self.bot, member))
+                await channel.send(embed=userembed(self.bot, member, member.guild))
             roleid = await dbget(member.guild.id, self.bot.user.name, "defaultroleid")
             role = discord.utils.get(member.guild.roles, id=roleid[0])
             if role:
