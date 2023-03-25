@@ -16,10 +16,15 @@ class messagefunctions(commands.Cog):
             return
         if message.author.bot:  # If message is a bot, do nothing
             return
-        msg = message.content.lower().translate(str.maketrans('', '', string.punctuation)).split(" ")
-        for substring in msg:
-            if substring == "cloe":  # Trigger word
-                msg.remove(substring)
+
+        if message.mentions:
+            tagged = message.mentions
+            if tagged[0].id == self.bot.user.id:
+                msg = message.content.lower().translate(str.maketrans('', '', string.punctuation)).replace(
+                        str(self.bot.user.id), "").split(" ")
+                while "" in msg:
+                    msg.remove("")
+                msg = " ".join(msg)
                 msg = " ".join(msg)
                 response = await getgreeting(msg)
                 ily = await getily(msg)
