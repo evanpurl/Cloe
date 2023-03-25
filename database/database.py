@@ -26,6 +26,32 @@ async def gettoken(botname):
         print(e)
         return e
 
+async def getanswer(question):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            # print('Processing Greeting.')
+            c = conn.cursor()
+            sql = f"SELECT response from questions where question=%(question)s;"
+            user_data = {
+                'question': question,
+            }
+            c.execute(sql, user_data)
+            response = c.fetchone()
+            if not response:
+                return None
+            response = response[0].split(", ")
+            choice = random.choice(response)
+            c.close()
+            conn.close()
+            return choice
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
 async def getgreeting(greeting):
     try:
         db_config = read_db_config()

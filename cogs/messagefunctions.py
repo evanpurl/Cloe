@@ -1,7 +1,7 @@
 import asyncio
 import discord
 from discord.ext import commands
-from database.database import getgreeting, getily, getcompliment
+from database.database import getgreeting, getily, getcompliment, getanswer
 import string
 
 
@@ -25,9 +25,12 @@ class messagefunctions(commands.Cog):
                 while "" in msg:
                     msg.remove("")
                 msg = " ".join(msg)
+                answer = await getanswer(msg)
                 response = await getgreeting(msg)
                 ily = await getily(msg)
                 compliment = await getcompliment(msg)
+                if answer:
+                    await message.reply(f"{answer}!")
                 if response:
                     await message.reply(f"{response} {message.author.name}!")
                 elif ily:
