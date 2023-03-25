@@ -25,7 +25,6 @@ class messagefunctions(commands.Cog):
                 while "" in msg:
                     msg.remove("")
                 msg = " ".join(msg)
-                msg = " ".join(msg)
                 response = await getgreeting(msg)
                 ily = await getily(msg)
                 compliment = await getcompliment(msg)
