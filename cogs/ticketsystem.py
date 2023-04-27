@@ -219,7 +219,7 @@ class ticketcmd(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.command(name="resetmessagechannel", description="Command to reset your server's message log channel.")
+    @app_commands.command(name="resetticketchannel", description="Command used by admin to reset the ticket log channel.")
     async def resetmessagechannel(self, interaction: discord.Interaction):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", 0)
