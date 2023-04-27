@@ -4,7 +4,7 @@ from discord.ext import commands
 from util.dbsetget import dbset, dbget
 
 
-class messagefunctions(commands.Cog):
+class messageeditdeletecmds(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -68,4 +68,4 @@ class messagefunctions(commands.Cog):
 
 
 async def setup(bot: commands.Cog):
-    await bot.add_cog(messagefunctions(bot))
+    await bot.add_cog(messageeditdeletecmds(bot))
