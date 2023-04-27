@@ -55,7 +55,7 @@ class messageeditdeletecmds(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.command(name="setmessagechannel", description="Command to reset your server's message log channel.")
+    @app_commands.command(name="setmessagechannel", description="Command to set your server's message log channel.")
     async def setmessagechannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "messagechannelid", channel.id)
