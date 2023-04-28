@@ -1,7 +1,6 @@
 from mysql.connector import MySQLConnection, Error
 
 from database.python_mysql_dbconfig import read_db_config
-from botnetwork.python_mysql_dbconfig import read_db_config_botnet
 
 
 async def dbget(serverid, bot, valuetoget):
@@ -39,32 +38,6 @@ async def dbset(serverid, bot, valuetoset, value):
             user_data = {
                 'value': value,
                 'serverid': serverid,
-            }
-            c.execute(sql, user_data)
-            conn.commit()
-            c.close()  # Closes Cursor
-            conn.close()  # Closes Connection
-        else:
-            return 'Connection to database failed.'
-    except Error as e:
-        print(e)
-        return e
-
-
-async def dbsetbotnetwork(botname, botid, connection, ownerid):
-    try:
-        db_config = read_db_config_botnet()
-        conn = MySQLConnection(**db_config)
-        if conn.is_connected():
-            c = conn.cursor()
-
-            sql = f"INSERT INTO bots (botname, botid, connection, ownerid) VALUES (%(botname)s, %(botid)s, " \
-                  f"%(connection)s, %(ownerid)s);"
-            user_data = {
-                'botname': botname,
-                'botid': botid,
-                'connection': connection,
-                'ownerid': ownerid,
             }
             c.execute(sql, user_data)
             conn.commit()
