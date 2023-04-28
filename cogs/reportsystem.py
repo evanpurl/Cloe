@@ -85,7 +85,7 @@ class reportbutton(discord.ui.View):
                         content=f"{interaction.user.mention} created a report!")
                     await ticketchan.send(
                         embed=ticketembed(interaction.client),
-                        view=ticketbuttonpanel())
+                        view=reportbuttonpanel())
 
                     def check(m: discord.Message):  # m = discord.Message.
                         return m.author.id == interaction.user.id and m.channel.id == ticketchan.id
@@ -104,7 +104,7 @@ class reportbutton(discord.ui.View):
                         content=f"{interaction.user.mention} created a Report!")
                     await ticketchan.send(
                         embed=ticketembed(interaction.client),
-                        view=ticketbuttonpanel())
+                        view=reportbuttonpanel())
 
                     def check(m: discord.Message):  # m = discord.Message.
                         return m.author.id == interaction.user.id and m.channel.id == ticketchan.id
@@ -135,7 +135,7 @@ class reportsystemcmd(commands.Cog):
     @app_commands.command(name="report", description="Command used by admin to create the report message.")
     async def report(self, interaction: discord.Interaction) -> None:
         try:
-            await interaction.response.send_message(embed=ticketmessageembed(self.bot), view=reportbutton())
+            await interaction.response.send_message(embed=reportmessageembed(self.bot), view=reportbutton())
         except Exception as e:
             print(e)
 
