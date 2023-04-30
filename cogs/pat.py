@@ -12,12 +12,12 @@ class patcmd(commands.Cog):
     async def pat(self, interaction: discord.Interaction, user: discord.User = None):
         try:
             if user is None:
-                await interaction.response.send_message(content=f"""{self.bot.user.name} Pats your head <:c1o3pet:1102370970460770304>""", ephemeral=True)
+                await interaction.response.send_message(content=f"""{self.bot.user.name} Pats your head <a:c1o3pet:1102370970460770304>""", ephemeral=True)
             else:
                 if user.id == self.bot.user.id:
                     await interaction.response.send_message(content=f"""I can't pet my own head, silly.""", ephemeral=True)
                 else:
-                    await interaction.response.send_message(content=f"""{self.bot.user.name} Pats {user.mention}'s head <:c1o3pet:1102370970460770304>""")
+                    await interaction.response.send_message(content=f"""{self.bot.user.name} Pats {user.mention}'s head <a:c1o3pet:1102370970460770304>""")
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
