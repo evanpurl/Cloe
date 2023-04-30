@@ -9,6 +9,8 @@ from util.dbsetget import dbget, dbset
 
 timeout = 300  # seconds
 
+botsdiscord = discord.Object(id=1081357638954123276)  # Bots by Purls Discord
+
 
 # Needs "manage role" perms
 # ticket-usernamediscriminator
@@ -198,6 +200,7 @@ class ticketcmd(commands.Cog):
         self.bot = bot
 
     @commands.has_permissions(manage_roles=True)
+    @app_commands.guilds(botsdiscord)
     @app_commands.command(name="ticket", description="Command used by admin to create the ticket message.")
     async def ticket(self, interaction: discord.Interaction) -> None:
         try:
@@ -206,6 +209,7 @@ class ticketcmd(commands.Cog):
             print(e)
 
     @commands.has_permissions(manage_roles=True)
+    @app_commands.guilds(botsdiscord)
     @app_commands.command(name="setticketchannel", description="Command used by admin to set the ticket log channel.")
     async def setticketchannel(self, interaction: discord.Interaction, channel: discord.TextChannel) -> None:
         try:
@@ -219,6 +223,7 @@ class ticketcmd(commands.Cog):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.guilds(botsdiscord)
     @app_commands.command(name="resetticketchannel", description="Command used by admin to reset the ticket log channel.")
     async def resetmessagechannel(self, interaction: discord.Interaction):
         try:

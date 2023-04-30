@@ -13,12 +13,12 @@ class punchcmd(commands.Cog):
     async def pat(self, interaction: discord.Interaction, user: discord.User = None):
         try:
             if user is None:
-                await interaction.response.send_message(content=f"""{self.bot.user.name} punches you""", ephemeral=True)
+                await interaction.response.send_message(content=f"""{self.bot.user.name} punches you 👊""", ephemeral=True)
             else:
                 if user.id == self.bot.user.id:
                     await interaction.response.send_message(content=f"""I can't punch myself, duh.""", ephemeral=True)
                 else:
-                    await interaction.response.send_message(content=f"""{self.bot.user.name} punches {user.mention}.""")
+                    await interaction.response.send_message(content=f"""{self.bot.user.name} punches {user.mention} 👊""")
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)

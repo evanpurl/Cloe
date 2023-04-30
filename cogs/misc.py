@@ -11,11 +11,7 @@ class misccommands(commands.Cog):
     @app_commands.command(name="version", description="Slash command for Cloe's version.")
     async def version(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            content=f"""{interaction.user.mention}, this is the 2.0 version of Cloe. My features are as follows:
-            **Saying hello.** 
-            **Welcoming people to the server.**
-            **Auto adding people to the 'Player' role.**
-            **I'll add to this later.**""",
+            content=f"""{interaction.user.mention}, this is the 2.1.5 version of Cloe. You can find my list of features here: https://bots.botsbypurls.com/C1o3.html""",
             ephemeral=True)
 
 

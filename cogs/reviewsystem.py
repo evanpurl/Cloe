@@ -3,6 +3,8 @@ import discord
 from discord import app_commands, ui
 from discord.ext import commands
 
+botsdiscord = discord.Object(id=1081357638954123276)  # Bots by Purls Discord
+
 
 def reviewembed(bot, user, botmade, details, rating):
     star = "⭐"
@@ -71,6 +73,7 @@ class reviewcmd(commands.Cog):
         self.bot = bot
 
     @commands.has_permissions(manage_roles=True)
+    @app_commands.guilds(botsdiscord)
     @app_commands.command(name="review", description="Command used by admin to create the review message.")
     async def ticket(self, interaction: discord.Interaction) -> None:
         try:
