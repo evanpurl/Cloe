@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from util.accessutils import whohasaccess
 
@@ -14,6 +15,8 @@ class bcommands(commands.Cog):
             if await whohasaccess(ctx.message.author.id):
                 print(f"Syncing commands")
                 await self.bot.tree.sync()
+                await self.bot.tree.sync(guild=discord.Object(id=1081357638954123276))
+                await self.bot.tree.sync(guild=discord.Object(id=955962668756385792))
                 await ctx.send(f"Commands synced")
                 print(f"Commands synced")
             else:

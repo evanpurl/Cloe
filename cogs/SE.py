@@ -4,6 +4,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+
 # ----------------------- SE Section
 
 async def getLeader(userid):
@@ -52,11 +53,15 @@ async def setLeader(roleid, userid):
         print(e)
         return e
 
+
 SEServer = discord.Object(id=955962668756385792)  # SE Discord
+
+
 class SEcommands(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
     @app_commands.checks.has_permissions(manage_roles=True)
     @app_commands.guilds(SEServer)
     @app_commands.command(name="factionlead", description="Slash command to add faction role leader.")
@@ -119,6 +124,7 @@ class SEcommands(commands.Cog):
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
 
 async def setup(bot):
     await bot.add_cog(SEcommands(bot))
