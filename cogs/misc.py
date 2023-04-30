@@ -12,7 +12,7 @@ class misccommands(commands.Cog):
     async def version(self, interaction: discord.Interaction):
         await interaction.response.send_message(
             content=f"""{interaction.user.mention}, this is the 2.1.5 version of Cloe. You can find my list of features here: https://bots.botsbypurls.com/C1o3.html
-    Discord: https://discord.gg/g8UbZ95QZh""",
+Discord: https://discord.gg/g8UbZ95QZh""",
             ephemeral=True)
 
 
