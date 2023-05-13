@@ -32,7 +32,8 @@ class memberfunctions(commands.Cog):
             role = discord.utils.get(member.guild.roles, id=roleid[0])
             if role:
                 await member.add_roles(role)
-        except discord.Forbidden:
+        except Exception as e:
+            print(e)
             wchannel = await dbget(member.guild.id, self.bot.user.name, "welcomechannelid")
             channel = discord.utils.get(member.guild.channels, id=wchannel[0])
             if channel:
