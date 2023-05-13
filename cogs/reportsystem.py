@@ -74,7 +74,7 @@ class reportbutton(discord.ui.View):
                     interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     interaction.user: discord.PermissionOverwrite(read_messages=True),
                     interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-                ticketcat = discord.utils.get(interaction.guild.categories, name="Reports")
+                ticketcat = discord.utils.get(interaction.guild.categories, name="REPORTS")
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
                         f"report-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
