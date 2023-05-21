@@ -15,6 +15,7 @@ class transcriptcmd(commands.Cog):
     @app_commands.command(name="transcript", description="Command to transcript current channel.")
     async def transcript(self, interaction: discord.Interaction):
         try:
+            await interaction.response.defer(ephemeral=True)
             transcript = await chat_exporter.export(
                 interaction.channel,
             )
@@ -26,7 +27,6 @@ class transcriptcmd(commands.Cog):
                 filename=f"transcript-{interaction.channel.name}.html",
             )
 
-            await interaction.response.defer(ephemeral=True)
             await interaction.user.send(file=transcript_file)
             await interaction.followup.send(content="Transcript created.", ephemeral=True)
         except Exception as e:
