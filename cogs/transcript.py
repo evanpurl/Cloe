@@ -26,8 +26,9 @@ class transcriptcmd(commands.Cog):
                 filename=f"transcript-{interaction.channel.name}.html",
             )
 
+            await interaction.response.defer(ephemeral=True)
             await interaction.user.send(file=transcript_file)
-            await interaction.response.send_message(content="Transcript created.", ephemeral=True)
+            await interaction.followup.send(content="Transcript created.", ephemeral=True)
         except Exception as e:
             print(e)
 
