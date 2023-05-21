@@ -14,19 +14,22 @@ class transcriptcmd(commands.Cog):
     @app_commands.checks.has_permissions(administrator=True)
     @app_commands.command(name="transcript", description="Command to transcript current channel.")
     async def transcript(self, interaction: discord.Interaction):
-        transcript = await chat_exporter.export(
-            interaction.channel,
-        )
-        if transcript is None:
-            return
+        try:
+            transcript = await chat_exporter.export(
+                interaction.channel,
+            )
+            if transcript is None:
+                return
 
-        transcript_file = discord.File(
-            io.BytesIO(transcript.encode()),
-            filename=f"transcript-{interaction.channel.name}.html",
-        )
+            transcript_file = discord.File(
+                io.BytesIO(transcript.encode()),
+                filename=f"transcript-{interaction.channel.name}.html",
+            )
 
-        await interaction.user.send(file=transcript_file)
-        await interaction.response.send_message(content="Transcript created.", ephemeral=True)
+            await interaction.user.send(file=transcript_file)
+            await interaction.response.send_message(content="Transcript created.", ephemeral=True)
+        except Exception as e:
+            print(e)
 
     @transcript.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
