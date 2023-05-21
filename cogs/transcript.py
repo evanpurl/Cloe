@@ -26,6 +26,7 @@ class transcriptcmd(commands.Cog):
         )
 
         await interaction.user.send(file=transcript_file)
+        await interaction.response.send_message(content="Transcript created.", ephemeral=True)
 
     @transcript.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
