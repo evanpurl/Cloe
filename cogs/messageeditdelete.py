@@ -1,3 +1,5 @@
+import datetime
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -12,35 +14,49 @@ class messageeditdeletecmds(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         try:
-            if len(message.content) <= 1500:
+            embed = discord.Embed(
+                title="Message Edit", color=discord.Color.red(),
+                timestamp=datetime.datetime.now())
+            embed.set_author(name=message.author.name, icon_url=message.author.avatar)
+            embed.add_field(name="Channel", value=message.channel.mention)
+            if len(message.content) <= 1024:
+                embed.add_field(name="Message", value=message.content)
                 msgchnl = await dbget(message.guild.id, self.bot.user.name, "messagechannelid")
                 channel = discord.utils.get(message.guild.channels, id=msgchnl[0])
                 if channel:
-                    await channel.send(f"Message from {message.author.name} in channel {message.channel.mention} deleted: {message.content}")
+                    await channel.send(embed=embed)
             else:
                 msgchnl = await dbget(message.guild.id, self.bot.user.name, "messagechannelid")
                 channel = discord.utils.get(message.guild.channels, id=msgchnl[0])
                 if channel:
-                    await channel.send(
-                         f"Message from {message.author.name} in channel {message.channel.mention} deleted: content too long to send.")
+                    await channel.send(embed=embed)
         except Exception as e:
             print(e)
 
     @commands.Cog.listener()
     async def on_message_edit(self, message_before: discord.Message, message_after: discord.Message):
         try:
-            msgsum = sum([len(message_before.content), len(message_after.content)])
-            if msgsum <= 1500:
+            embed = discord.Embed(
+                title="Message Edit", color=discord.Color.blue(),
+                timestamp=datetime.datetime.now())
+            embed.set_author(name=message_before.author.name, icon_url=message_before.author.avatar)
+            beforemsglength = len(message_before.content)
+            aftermsglength = len(message_after.content)
+            embed.add_field(name="Channel", value=message_before.channel.mention)
+            if beforemsglength <= 1024:
+                embed.add_field(name="Before", value=message_before.content)
+                embed.add_field(name="After", value=message_after.content)
                 msgchnl = await dbget(message_before.guild.id, self.bot.user.name, "messagechannelid")
                 channel = discord.utils.get(message_before.guild.channels, id=msgchnl[0])
                 if channel:
-                    await channel.send(f"Message from {message_before.author.name} in channel {message_before.channel.mention} edited from {message_before.content} to {message_after.content}")
+                    await channel.send(embed=embed)
             else:
+                embed.add_field(name="Before", value="Message too long")
+                embed.add_field(name="After", value=message_after.jump_url)
                 msgchnl = await dbget(message_before.guild.id, self.bot.user.name, "messagechannelid")
                 channel = discord.utils.get(message_before.guild.channels, id=msgchnl[0])
                 if channel:
-                    await channel.send(
-                        f"Message from {message_before.author.name} in channel {message_before.channel.mention} edited: content too long to send.")
+                    await channel.send(embed=embed)
         except Exception as e:
             print(e)
 
