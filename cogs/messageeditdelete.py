@@ -26,6 +26,7 @@ class messageeditdeletecmds(commands.Cog):
                 if channel:
                     await channel.send(embed=embed)
             else:
+                embed.add_field(name="Message", value="Message too long to process")
                 msgchnl = await dbget(message.guild.id, self.bot.user.name, "messagechannelid")
                 channel = discord.utils.get(message.guild.channels, id=msgchnl[0])
                 if channel:
