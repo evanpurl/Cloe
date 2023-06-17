@@ -15,7 +15,7 @@ class messageeditdeletecmds(commands.Cog):
     async def on_message_delete(self, message: discord.Message):
         try:
             embed = discord.Embed(
-                title="Message Edit", color=discord.Color.red(),
+                title="Message Deleted", color=discord.Color.red(),
                 timestamp=datetime.datetime.now())
             embed.set_author(name=message.author.name, icon_url=message.author.avatar)
             embed.add_field(name="Channel", value=message.channel.mention)
