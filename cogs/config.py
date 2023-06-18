@@ -16,26 +16,30 @@ class Select(discord.ui.Select):
         super().__init__(placeholder="Select an option", max_values=1, min_values=1, options=options)
 
     async def callback(self, interaction: discord.Interaction):
-        if self.values[0] == "Message Log":
-            ison = await dbget(interaction.guild.id, interaction.client.user.name, "ismsglogon")
-            if ison[0] == 1:
-                await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 0)
-                await interaction.response.send_message(content=f"Message log **Disabled**", ephemeral=True)
-                await interaction.followup.edit_message(view=SelectView())
-            else:
-                await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 1)
-                await interaction.response.send_message(content=f"Message log **Enabled**", ephemeral=True)
-                await interaction.followup.edit_message(view=SelectView())
-        if self.values[0] == "Report Transcript":
-            ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
-            if ison[0] == 1:
-                await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 0)
-                await interaction.response.send_message(content=f"Report Transcript **Disabled**", ephemeral=True)
-                await interaction.followup.edit_message(view=SelectView())
-            else:
-                await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 1)
-                await interaction.response.send_message(content=f"Report Transcript **Enabled**", ephemeral=True)
-                await interaction.followup.edit_message(view=SelectView())
+        try:
+            if self.values[0] == "Message Log":
+                ison = await dbget(interaction.guild.id, interaction.client.user.name, "ismsglogon")
+                if ison[0] == 1:
+                    await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 0)
+                    await interaction.response.send_message(content=f"Message log **Disabled**", ephemeral=True)
+                    await interaction.followup.edit_message(view=SelectView())
+                else:
+                    await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 1)
+                    await interaction.response.send_message(content=f"Message log **Enabled**", ephemeral=True)
+                    await interaction.followup.edit_message(view=SelectView())
+            if self.values[0] == "Report Transcript":
+                ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
+                if ison[0] == 1:
+                    await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 0)
+                    await interaction.response.send_message(content=f"Report Transcript **Disabled**", ephemeral=True)
+                    await interaction.followup.edit_message(view=SelectView())
+                else:
+                    await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 1)
+                    await interaction.response.send_message(content=f"Report Transcript **Enabled**", ephemeral=True)
+                    await interaction.followup.edit_message(view=SelectView())
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 
 class SelectView(discord.ui.View):
