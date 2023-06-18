@@ -15,7 +15,7 @@ class messageeditdeletecmds(commands.Cog):
     async def on_message_delete(self, message: discord.Message):
         try:
             ison = await dbget(message.guild.id, self.bot.user.name, "ismsglogon")
-            if ison:
+            if ison[0]:
                 embed = discord.Embed(
                     title="Message Deleted", color=discord.Color.red(),
                     timestamp=datetime.datetime.now())
@@ -40,7 +40,7 @@ class messageeditdeletecmds(commands.Cog):
     async def on_message_edit(self, message_before: discord.Message, message_after: discord.Message):
         try:
             ison = await dbget(message_before.guild.id, self.bot.user.name, "ismsglogon")
-            if ison:
+            if ison[0]:
                 embed = discord.Embed(
                     title="Message Edit", color=discord.Color.blue(),
                     timestamp=datetime.datetime.now())

@@ -35,7 +35,7 @@ class reportbuttonpanel(discord.ui.View):
             msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "messagechannelid")
             channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
             ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
-            if channel and ison:
+            if channel and ison[0]:
                 await interaction.response.defer(ephemeral=True)
                 transcript = await chat_exporter.export(
                     interaction.channel,
@@ -71,7 +71,7 @@ class reportbuttonpanel(discord.ui.View):
                     msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "messagechannelid")
                     channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
                     ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
-                    if channel and ison:
+                    if channel and ison[0]:
                         await interaction.response.defer(ephemeral=True)
                         transcript = await chat_exporter.export(
                             interaction.channel,
