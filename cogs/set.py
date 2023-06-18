@@ -16,7 +16,7 @@ class setcmd(commands.GroupCog, name="set"):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "welcomechannelid", channel.id)
             await interaction.response.send_message(
-                f"Your welcome channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                f"Welcome Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -28,7 +28,7 @@ class setcmd(commands.GroupCog, name="set"):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "categoryid", category.id)
             await interaction.response.send_message(
-                f"Your report category has been set to {discord.utils.get(interaction.guild.categories, id=category.id)}.",
+                f"Report Category has been set to {discord.utils.get(interaction.guild.categories, id=category.id)}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -39,7 +39,7 @@ class setcmd(commands.GroupCog, name="set"):
     async def ping(self, interaction: discord.Interaction, role: discord.Role):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "pingroleid", role.id)
-            await interaction.response.send_message(content=f"""Ping role has been set to {role.name}""",
+            await interaction.response.send_message(content=f"""Ping Role has been set to {role.name}""",
                                                     ephemeral=True)
         except Exception as e:
             print(e)
@@ -51,7 +51,7 @@ class setcmd(commands.GroupCog, name="set"):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "messagechannelid", channel.id)
             await interaction.response.send_message(
-                f"Your message log channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                f"Message Log Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -64,7 +64,7 @@ class setcmd(commands.GroupCog, name="set"):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "transcriptchannelid", channel.id)
             await interaction.response.send_message(
-                f"Your message log channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                f"Transcript Log Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -76,7 +76,7 @@ class setcmd(commands.GroupCog, name="set"):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "defaultroleid", role.id)
             await interaction.response.send_message(
-                content=f"""You server's default role has been set to {role.name}""", ephemeral=True)
+                content=f"""Default Role has been set to {role.name}""", ephemeral=True)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
