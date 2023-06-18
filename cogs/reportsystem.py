@@ -32,7 +32,7 @@ class reportbuttonpanel(discord.ui.View):
                        custom_id="cloereport:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            msgchnl = await dbget(interaction.guild.id, self.bot.user.name, "messagechannelid")
+            msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "messagechannelid")
             channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
             ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
             if channel and ison:
@@ -68,7 +68,7 @@ class reportbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
-                    msgchnl = await dbget(interaction.guild.id, self.bot.user.name, "messagechannelid")
+                    msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "messagechannelid")
                     channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
                     ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
                     if channel and ison:
