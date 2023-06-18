@@ -21,22 +21,18 @@ class Select(discord.ui.Select):
                 ison = await dbget(interaction.guild.id, interaction.client.user.name, "ismsglogon")
                 if ison[0] == 1:
                     await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 0)
-                    await interaction.response.send_message(content=f"Message log **Disabled**", ephemeral=True)
-                    await interaction.followup.edit(view=SelectView())
+                    await interaction.response.edit_message(content=f"Message log **Disabled**", ephemeral=True, view=SelectView())
                 else:
                     await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 1)
-                    await interaction.response.send_message(content=f"Message log **Enabled**", ephemeral=True)
-                    await interaction.followup.edit(view=SelectView())
+                    await interaction.response.edit_message(content=f"Message log **Enabled**", ephemeral=True, view=SelectView())
             if self.values[0] == "Report Transcript":
                 ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
                 if ison[0] == 1:
                     await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 0)
-                    await interaction.response.send_message(content=f"Report Transcript **Disabled**", ephemeral=True)
-                    await interaction.followup.edit(view=SelectView())
+                    await interaction.response.edit_message(content=f"Report Transcript **Disabled**", ephemeral=True, view=SelectView())
                 else:
                     await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 1)
-                    await interaction.response.send_message(content=f"Report Transcript **Enabled**", ephemeral=True)
-                    await interaction.followup.edit(view=SelectView())
+                    await interaction.response.edit_message(content=f"Report Transcript **Enabled**", ephemeral=True, view=SelectView())
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
