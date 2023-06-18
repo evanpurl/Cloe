@@ -228,7 +228,7 @@ class ticketcmd(commands.Cog):
     async def resetmessagechannel(self, interaction: discord.Interaction):
         try:
             await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", 0)
-            await interaction.response.send_message(f"Message log channel config has been reset.", ephemeral=True)
+            await interaction.response.send_message(f"Ticket log channel config has been reset.", ephemeral=True)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
