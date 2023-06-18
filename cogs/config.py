@@ -18,7 +18,7 @@ class Select(discord.ui.Select):
     async def callback(self, interaction: discord.Interaction):
         if self.values[0] == "Message Log":
             ison = await dbget(interaction.guild.id, interaction.client.user.name, "ismsglogon")
-            if ison:
+            if ison == 1:
                 await dbset(interaction.guild.id, interaction.client.user.name, "ismsglogon", 0)
                 await interaction.response.send_message(content=f"Message log **Disabled**", ephemeral=True)
             else:
@@ -26,7 +26,7 @@ class Select(discord.ui.Select):
                 await interaction.response.send_message(content=f"Message log **Enabled**", ephemeral=True)
         if self.values[0] == "Report Transcript":
             ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
-            if ison:
+            if ison == 1:
                 await dbset(interaction.guild.id, interaction.client.user.name, "isreporttranscripton", 0)
                 await interaction.response.send_message(content=f"Report Transcript **Disabled**", ephemeral=True)
             else:
