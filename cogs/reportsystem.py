@@ -1,8 +1,11 @@
 import asyncio
 import datetime
+import io
+
 import discord
 from discord import app_commands, ui
 from discord.ext import commands
+from chat_exporter import chat_exporter
 
 from util.dbsetget import dbset, dbget
 
@@ -29,6 +32,23 @@ class reportbuttonpanel(discord.ui.View):
                        custom_id="cloereport:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
+            msgchnl = await dbget(interaction.guild.id, self.bot.user.name, "messagechannelid")
+            channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
+            ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
+            if channel and ison:
+                await interaction.response.defer(ephemeral=True)
+                transcript = await chat_exporter.export(
+                    interaction.channel,
+                )
+                if transcript is None:
+                    return
+
+                transcript_file = discord.File(
+                    io.BytesIO(transcript.encode()),
+                    filename=f"transcript-{interaction.channel.name}.html",
+                )
+
+                await channel.send(file=transcript_file)
             await interaction.channel.delete()
         except Exception as e:
             print(e)
@@ -48,6 +68,23 @@ class reportbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
+                    msgchnl = await dbget(interaction.guild.id, self.bot.user.name, "messagechannelid")
+                    channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
+                    ison = await dbget(interaction.guild.id, interaction.client.user.name, "isreporttranscripton")
+                    if channel and ison:
+                        await interaction.response.defer(ephemeral=True)
+                        transcript = await chat_exporter.export(
+                            interaction.channel,
+                        )
+                        if transcript is None:
+                            return
+
+                        transcript_file = discord.File(
+                            io.BytesIO(transcript.encode()),
+                            filename=f"transcript-{interaction.channel.name}.html",
+                        )
+
+                        await channel.send(file=transcript_file)
                     await interaction.channel.delete()
                     return
             else:
