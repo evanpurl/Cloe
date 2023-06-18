@@ -177,18 +177,7 @@ class reportsystemcmd(commands.Cog):
         except Exception as e:
             print(e)
 
-    @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.command(name="resetreportcategory", description="Command to reset your server's reportcategory.")
-    async def resetreportcategory(self, interaction: discord.Interaction):
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "categoryid", 0)
-            await interaction.response.send_message(f"Report Category config has been reset.", ephemeral=True)
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
     @report.error
-    @resetreportcategory.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
