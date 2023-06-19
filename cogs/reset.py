@@ -4,6 +4,7 @@ from discord.ext import commands
 
 from util.dbsetget import dbset, dbget
 
+botsdiscord = discord.Object(id=1081357638954123276)  # Bots by Purls Discord
 
 class resetcmd(commands.GroupCog, name="reset"):
 
@@ -89,6 +90,18 @@ class resetcmd(commands.GroupCog, name="reset"):
             await interaction.response.send_message(content=f"Verified role has been reset.", ephemeral=True)
         except Exception as e:
             print(e)
+
+    @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.guilds(botsdiscord)
+    @app_commands.command(name="ticket-channel",
+                          description="Command used by admin to reset the ticket log channel.")
+    async def resetmessagechannel(self, interaction: discord.Interaction):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", 0)
+            await interaction.response.send_message(f"Ticket log channel config has been reset.", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @welcomechannel.error
     @reportcategory.error

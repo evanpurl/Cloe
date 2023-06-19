@@ -4,6 +4,8 @@ from discord.ext import commands
 
 from util.dbsetget import dbset, dbget
 
+botsdiscord = discord.Object(id=1081357638954123276)  # Bots by Purls Discord
+
 
 class setcmd(commands.GroupCog, name="set"):
 
@@ -89,6 +91,20 @@ class setcmd(commands.GroupCog, name="set"):
             await interaction.response.send_message(content=f"Verified role set to {role.mention}", ephemeral=True)
         except Exception as e:
             print(e)
+
+    @commands.has_permissions(manage_roles=True)
+    @app_commands.guilds(botsdiscord)
+    @app_commands.command(name="ticket-channel", description="Command used by admin to set the ticket log channel.")
+    async def setticketchannel(self, interaction: discord.Interaction, channel: discord.TextChannel) -> None:
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", channel.id)
+            await interaction.response.send_message(
+                f"Your ticket log channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                ephemeral=True)
+
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @welcomechannel.error
     @reportcategory.error
