@@ -25,6 +25,18 @@ class setcmd(commands.GroupCog, name="set"):
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.command(name="goodbye-channel", description="Command to set your server's goodbye channel.")
+    async def goodbyechannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        try:
+            await dbset(interaction.guild.id, self.bot.user.name, "goodbyechannelid", channel.id)
+            await interaction.response.send_message(
+                f"Goodbye Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.checks.has_permissions(manage_channels=True)
     @app_commands.command(name="report-category", description="Command to set your server's report category.")
     async def reportcategory(self, interaction: discord.Interaction, category: discord.CategoryChannel):
         try:
