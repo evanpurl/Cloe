@@ -11,7 +11,7 @@ class misccommands(commands.Cog):
     @app_commands.command(name="version", description="Slash command for Cloe's version.")
     async def version(self, interaction: discord.Interaction):
         await interaction.response.send_message(
-            content=f"""{interaction.user.mention}, this is the 2.4.5 version of Cloe. You can find my list of features here: https://bots.botsbypurls.com/cloe.html
+            content=f"""{interaction.user.mention}, this is the 2.4.6 version of Cloe. You can find my list of features here: https://bots.botsbypurls.com/cloe.html
 Discord: https://discord.gg/g8UbZ95QZh""",
             ephemeral=True)
 
