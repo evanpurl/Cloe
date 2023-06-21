@@ -1,5 +1,8 @@
 import asyncio
 import discord
+import server
+from aiohttp import web
+
 from util.load_extensions import load_extensions  # Our code
 from discord.ext import commands
 from database.database import gettoken  # Our code
@@ -10,6 +13,21 @@ intents.message_content = True
 intents.members = True
 
 client = commands.Bot(command_prefix="$", intents=intents)
+
+
+@client.event
+async def on_ready():
+    client.server = server.HTTPServer(
+        bot=client,
+        host="0.0.0.0",
+        port="25565",
+    )
+    await client.server.start()
+
+
+@server.add_route(path="/", method="GET")
+async def home(request):
+    return web.json_response(data={"foo": "bar"}, status=200)
 
 
 # Main function to load extensions and then load bot.

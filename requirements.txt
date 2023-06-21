@@ -2,3 +2,4 @@ discord.py
 mysql-connector-python~=8.0.32
 requests
 chat_exporter
+dpy-http-server
