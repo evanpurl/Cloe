@@ -25,14 +25,7 @@ class ServerCog(commands.Cog):
 
     @server.add_route(path="/", method="GET", cog="ServerCog")
     async def home(self, request):
-        try:
-            if not self.bot.user.avatar:
-                pfp = 'nothing.png'
-            else:
-                pfp = self.bot.user.avatar.url
-            return web.json_response(data={self.bot.user.name: pfp}, status=200)
-        except Exception:
-            pass
+        return web.json_response(data={self.bot.user.name: "Online!"}, status=200)
 
 
 async def setup(bot):
