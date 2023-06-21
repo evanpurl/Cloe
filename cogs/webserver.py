@@ -31,7 +31,7 @@ class ServerCog(commands.Cog):
             else:
                 pfp = self.bot.user.avatar.url
             return web.json_response(data={self.bot.user.name: pfp}, status=200)
-        except aiohttp.web_exceptions.HTTPBadRequest:
+        except Exception:
             pass
 
 
