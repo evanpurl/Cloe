@@ -1,8 +1,11 @@
 import asyncio
 import datetime
+import io
+
 import discord
 from discord import app_commands, ui
 from discord.ext import commands
+from chat_exporter import chat_exporter
 
 from util.dbsetget import dbset, dbget
 
@@ -29,6 +32,22 @@ class reportbuttonpanel(discord.ui.View):
                        custom_id="cloereport:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
+            msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "transcriptchannelid")
+            channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
+            if channel:
+                await interaction.response.defer(ephemeral=True)
+                transcript = await chat_exporter.export(
+                    interaction.channel,
+                )
+                if transcript is None:
+                    return
+
+                transcript_file = discord.File(
+                    io.BytesIO(transcript.encode()),
+                    filename=f"transcript-{interaction.channel.name}.html",
+                )
+
+                await channel.send(file=transcript_file)
             await interaction.channel.delete()
         except Exception as e:
             print(e)
@@ -48,6 +67,22 @@ class reportbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
+                    msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "transcriptchannelid")
+                    channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
+                    if channel:
+                        await interaction.response.defer(ephemeral=True)
+                        transcript = await chat_exporter.export(
+                            interaction.channel,
+                        )
+                        if transcript is None:
+                            return
+
+                        transcript_file = discord.File(
+                            io.BytesIO(transcript.encode()),
+                            filename=f"transcript-{interaction.channel.name}.html",
+                        )
+
+                        await channel.send(file=transcript_file)
                     await interaction.channel.delete()
                     return
             else:
@@ -142,31 +177,7 @@ class reportsystemcmd(commands.Cog):
         except Exception as e:
             print(e)
 
-    @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.command(name="setreportcategory", description="Command to set your server's report category.")
-    async def reportcategory(self, interaction: discord.Interaction, category: discord.CategoryChannel):
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "categoryid", category.id)
-            await interaction.response.send_message(
-                f"Your report category has been set to {discord.utils.get(interaction.guild.categories, id=category.id)}.",
-                ephemeral=True)
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
-    @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.command(name="resetreportcategory", description="Command to reset your server's reportcategory.")
-    async def resetreportcategory(self, interaction: discord.Interaction):
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "categoryid", 0)
-            await interaction.response.send_message(f"Report Category config has been reset.", ephemeral=True)
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
     @report.error
-    @reportcategory.error
-    @resetreportcategory.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)

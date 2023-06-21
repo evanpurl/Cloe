@@ -77,27 +77,7 @@ class verification(commands.Cog):
                 content=f"""Unable to set your role, make sure my role is higher than the role you're trying to add!""",
                 ephemeral=True)
 
-    @app_commands.command(name="setverifiedrole", description="Command used to set the Verified role")
-    @app_commands.checks.has_permissions(manage_roles=True)
-    async def verifiedrole(self, interaction: discord.Interaction, role: discord.Role) -> None:
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "verifiedroleid", role.id)
-            await interaction.response.send_message(content=f"Verified role set to {role.mention}", ephemeral=True)
-        except Exception as e:
-            print(e)
-
-    @app_commands.command(name="resetverifiedrole", description="Command used to reset the Verified role")
-    @app_commands.checks.has_permissions(manage_roles=True)
-    async def resetverifiedrole(self, interaction: discord.Interaction) -> None:
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "verifiedroleid", 0)
-            await interaction.response.send_message(f"Verified Role config has been reset.", ephemeral=True)
-        except Exception as e:
-            print(e)
-
     @verifyfor.error
-    @verifiedrole.error
-    @resetverifiedrole.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)

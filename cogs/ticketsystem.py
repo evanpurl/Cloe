@@ -22,6 +22,7 @@ def ticketembed(bot):
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
     return embed
 
+
 class ticketbuttonpanel(discord.ui.View):
 
     def __init__(self):
@@ -208,33 +209,6 @@ class ticketcmd(commands.Cog):
         except Exception as e:
             print(e)
 
-    @commands.has_permissions(manage_roles=True)
-    @app_commands.guilds(botsdiscord)
-    @app_commands.command(name="setticketchannel", description="Command used by admin to set the ticket log channel.")
-    async def setticketchannel(self, interaction: discord.Interaction, channel: discord.TextChannel) -> None:
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", channel.id)
-            await interaction.response.send_message(
-                f"Your ticket log channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
-                ephemeral=True)
-
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
-    @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.guilds(botsdiscord)
-    @app_commands.command(name="resetticketchannel", description="Command used by admin to reset the ticket log channel.")
-    async def resetmessagechannel(self, interaction: discord.Interaction):
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", 0)
-            await interaction.response.send_message(f"Message log channel config has been reset.", ephemeral=True)
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
-    @setticketchannel.error
-    @resetmessagechannel.error
     @ticket.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
