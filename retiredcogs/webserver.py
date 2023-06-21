@@ -5,6 +5,7 @@ from discord.ext import commands
 host = '0.0.0.0'
 port = 25565
 
+# dpy-http-server
 
 class ServerCog(commands.Cog):
     def __init__(self, bot):
