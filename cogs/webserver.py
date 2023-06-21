@@ -1,9 +1,11 @@
+import aiohttp.web_exceptions
 import server
 from aiohttp import web
 from discord.ext import commands
 
 host = '0.0.0.0'
 port = 25565
+
 
 # dpy-http-server
 
@@ -23,11 +25,14 @@ class ServerCog(commands.Cog):
 
     @server.add_route(path="/", method="GET", cog="ServerCog")
     async def home(self, request):
-        if not self.bot.user.avatar:
-            pfp = 'nothing.png'
-        else:
-            pfp = self.bot.user.avatar.url
-        return web.json_response(data={self.bot.user.name: pfp}, status=200)
+        try:
+            if not self.bot.user.avatar:
+                pfp = 'nothing.png'
+            else:
+                pfp = self.bot.user.avatar.url
+            return web.json_response(data={self.bot.user.name: pfp}, status=200)
+        except aiohttp.web_exceptions.HTTPBadRequest:
+            pass
 
 
 async def setup(bot):
