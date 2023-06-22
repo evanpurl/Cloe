@@ -4,12 +4,16 @@ from util.load_extensions import load_extensions  # Our code
 from discord.ext import commands
 from database.database import gettoken  # Our code
 from database.testdbconnection import connect  # Our code
+import threading
+from util.webserver import run
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
 client = commands.Bot(command_prefix="$", intents=intents)
+
+server = threading.Thread(target=run())
 
 
 # Main function to load extensions and then load bot.
@@ -19,6 +23,7 @@ async def main():
             token = await gettoken("c1o3")
             await connect()  # Tests database connection
             await load_extensions(client)
+            server.start()
             await client.start(token[0])
         except KeyboardInterrupt:
             pass
