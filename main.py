@@ -13,7 +13,7 @@ intents.members = True
 
 client = commands.Bot(command_prefix="$", intents=intents)
 
-webserver = threading.Thread(target=run())
+webserver = threading.Thread(target=run)
 
 
 # Main function to load extensions and then load bot.
