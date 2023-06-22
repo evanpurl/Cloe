@@ -1,7 +1,7 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import socketserver
+from http.server import SimpleHTTPRequestHandler
 
 
-def run(server_class=HTTPServer, handler_class=BaseHTTPRequestHandler):
-    server_address = ('', 25565)
-    httpd = server_class(server_address, handler_class)
+def run():
+    httpd = socketserver.TCPServer(('0.0.0.0', 25565), SimpleHTTPRequestHandler)
     httpd.serve_forever()
