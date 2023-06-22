@@ -13,7 +13,7 @@ intents.members = True
 
 client = commands.Bot(command_prefix="$", intents=intents)
 
-server = threading.Thread(target=run())
+webserver = threading.Thread(target=run())
 
 
 # Main function to load extensions and then load bot.
@@ -23,7 +23,7 @@ async def main():
             token = await gettoken("c1o3")
             await connect()  # Tests database connection
             await load_extensions(client)
-            server.start()
+            webserver.start()
             await client.start(token[0])
         except KeyboardInterrupt:
             pass
