@@ -132,6 +132,7 @@ class SEcommands(commands.Cog):
     @app_commands.command(name="create-faction", description="Slash command to create faction role and channels.")
     async def factioncreate(self, interaction: discord.Interaction, factionname: str):
         try:
+            await interaction.response.defer(ephemeral=True)
             roleid = await dbget(interaction.guild.id, self.bot.user.name, "defaultroleid")
             role = discord.utils.get(interaction.guild.roles, id=roleid[0])
 
@@ -154,7 +155,7 @@ class SEcommands(commands.Cog):
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
             voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
 
-            await interaction.response.send_message(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
+            await interaction.followup.send(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
