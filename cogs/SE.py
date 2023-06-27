@@ -4,6 +4,8 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 
+from util.dbsetget import dbget
+
 
 # ----------------------- SE Section
 
@@ -121,6 +123,36 @@ class SEcommands(commands.Cog):
                 await interaction.response.send_message(
                     content=f"""You don't have proper permissions to run this command.""",
                     ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.checks.has_permissions(manage_roles=True)
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="create-faction", description="Slash command to create faction role and channels.")
+    async def factioncreate(self, interaction: discord.Interaction, factionname: str):
+        try:
+            roleid = await dbget(interaction.guild.id, self.bot.user.name, "defaultroleid")
+            role = discord.utils.get(interaction.guild.roles, id=roleid[0])
+
+            faction = await interaction.guild.create_role(name=factionname)
+
+            if role:
+                overwrites = {
+                    interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False, connect=False),
+                    role: discord.PermissionOverwrite(read_messages=False, connect=False),
+                    faction: discord.PermissionOverwrite(read_messages=True, send_messages=True, connect=True,
+                                                         speak=True)
+                }
+            else:
+                overwrites = {
+                    interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False, connect=False),
+                    faction: discord.PermissionOverwrite(read_messages=True, send_messages=True, connect=True,
+                                                         speak=True)
+                }
+            category = await interaction.guild.create_category(name=factionname, overwrites=overwrites)
+            textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
+            voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
