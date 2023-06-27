@@ -153,6 +153,8 @@ class SEcommands(commands.Cog):
             category = await interaction.guild.create_category(name=factionname, overwrites=overwrites)
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
             voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
+
+            await interaction.response.send_message(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
