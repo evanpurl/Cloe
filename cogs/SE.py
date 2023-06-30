@@ -178,7 +178,6 @@ class SEcommands(commands.Cog):
                 }
             category = await interaction.guild.create_category(name=factionname, overwrites=overwrites)
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
-            alliancechannel = await interaction.guild.create_text_channel(name=f"{factionname}-alliance", category=category)
             voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
 
             await interaction.followup.send(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
@@ -227,11 +226,63 @@ class SEcommands(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="alliance-create",
+                          description="Slash command to create a faction alliance channel.")
+    async def alliancecreate(self, interaction: discord.Interaction, role: discord.Role):
+        try:
+            leader = await getLeader(interaction.user.id)
+            cat = interaction.channel.category
+            facrole = discord.utils.get(interaction.guild.roles, name=cat.name)
+            if facrole and leader:
+                await interaction.response.defer(ephemeral=True)
+                # Add user to current channel.
+                overwrites = {
+                    interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False, connect=False),
+                    facrole: discord.PermissionOverwrite(read_messages=True, send_messages=True, connect=True,
+                                                         speak=True),
+                    role: discord.PermissionOverwrite(read_messages=True, send_messages=True, connect=True,
+                                                      speak=True)
+                }
+                textchannel = await interaction.guild.create_text_channel(name=f"{facrole.name}-{role.name}-alliance",
+                                                                          category=cat, overwrites=overwrites)
+                await interaction.followup.send(
+                    content=f"""Alliance created {textchannel.mention}""")
+                await textchannel.send(content=f"{facrole.mention} and {role.mention} alliance created.")
+            else:
+                await interaction.followup.send(
+                    content=f"""You don't have proper permissions to run this command here.""",
+                    ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="alliance-delete",
+                          description="Slash command to delete a faction alliance channel. "
+                                      "RUN INSIDE ALLIANCE CHANNEL ONLY!")
+    async def alliancedelete(self, interaction: discord.Interaction):
+        try:
+            leader = await getLeader(interaction.user.id)
+            cat = interaction.channel.category
+            facrole = discord.utils.get(interaction.guild.roles, name=cat.name)
+            if leader and facrole:
+                await interaction.channel.delete(reason="Alliance-delete command ran.")
+            else:
+                await interaction.followup.send(
+                    content=f"""You don't have proper permissions to run this command here.""",
+                    ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
     @allianceadd.error
     @allianceremove.error
     @factioncreate.error
     @factionadd.error
     @factionlead.error
+    @alliancecreate.error
+    @alliancedelete.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
