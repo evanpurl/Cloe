@@ -197,8 +197,7 @@ class SEcommands(commands.Cog):
                     overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
                     await interaction.channel.set_permissions(target=user, overwrite=overwrite)
                     await interaction.followup.send(
-                        content=f"""{user.mention}, you have been added to the channel {interaction.channel.mention}""",
-                        ephemeral=True)
+                        content=f"""{user.mention}, you have been added to the channel {interaction.channel.mention}""")
                 else:
                     await interaction.followup.send(
                         content=f"""There is no registered leader for role {role.name}""",
@@ -226,8 +225,7 @@ class SEcommands(commands.Cog):
                     overwrite = discord.PermissionOverwrite(read_messages=False, send_messages=False)
                     await interaction.channel.set_permissions(target=user, overwrite=overwrite)
                     await interaction.followup.send(
-                        content=f"""{user.name} has been removed from {interaction.channel.mention}""",
-                        ephemeral=True)
+                        content=f"""{user.name} has been removed from {interaction.channel.mention}""")
                 else:
                     await interaction.followup.send(
                         content=f"""There is no registered leader for role {role.name}""",
