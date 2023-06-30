@@ -176,6 +176,7 @@ class SEcommands(commands.Cog):
                 }
             category = await interaction.guild.create_category(name=factionname, overwrites=overwrites)
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
+            alliancechannel = await interaction.guild.create_text_channel(name=f"{factionname}-alliance", category=category)
             voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
 
             await interaction.followup.send(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
