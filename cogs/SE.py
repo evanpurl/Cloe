@@ -194,7 +194,9 @@ class SEcommands(commands.Cog):
                 # Add user to current channel.
                 user = discord.utils.get(interaction.guild.members, id=allianceleader[0])
                 if user:
-                    await interaction.channel.add_user(user)
+                    overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
+                    await interaction.client.edit_channel_permissions(interaction.channel,
+                                                          user, overwrite)
                     await interaction.response.send_message(
                         content=f"""{user.mention}, you have been added to the channel {interaction.channel.mention}""",
                         ephemeral=True)
@@ -222,7 +224,9 @@ class SEcommands(commands.Cog):
                 # Remove user from current channel.
                 user = discord.utils.get(interaction.guild.members, id=allianceleader[0])
                 if user:
-                    await interaction.channel.remove_user(user)
+                    overwrite = discord.PermissionOverwrite(read_messages=False, send_messages=False)
+                    await interaction.client.edit_channel_permissions(interaction.channel,
+                                                                      user, overwrite)
                     await interaction.response.send_message(
                         content=f"""{user.name} has been removed from {interaction.channel.mention}""",
                         ephemeral=True)
