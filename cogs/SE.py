@@ -239,5 +239,14 @@ class SEcommands(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @allianceadd.error
+    @allianceremove.error
+    @factioncreate.error
+    @factionadd.error
+    @factionlead.error
+    async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
+        await interaction.response.send_message(content=error,
+                                                ephemeral=True)
+
 async def setup(bot):
     await bot.add_cog(SEcommands(bot))
