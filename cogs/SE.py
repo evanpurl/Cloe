@@ -216,7 +216,7 @@ class SEcommands(commands.Cog):
                 await interaction.response.defer(ephemeral=True)
                 # Remove user from current channel.
                 overwrite = discord.PermissionOverwrite(read_messages=False, send_messages=False)
-                await interaction.channel.set_permissions(target=role, overwrite=overwrite)
+                await interaction.channel.set_permissions(target=role, overwrite=None)
                 await interaction.followup.send(
                     content=f"""{role.name} has been removed from {interaction.channel.mention}""")
             else:
