@@ -1,5 +1,6 @@
 import aiohttp.web_exceptions
 import server
+import ssl
 from aiohttp import web
 from discord.ext import commands
 
@@ -20,6 +21,8 @@ class ServerCog(commands.Cog):
         self.bot.loop.create_task(self._start_server())
 
     async def _start_server(self):
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
         await self.bot.wait_until_ready()
         await self.server.start()
 

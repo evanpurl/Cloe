@@ -32,6 +32,29 @@ async def getLeader(userid):
         print(e)
         return e
 
+async def getLeaderid(roleid):
+    try:
+        db_config = read_db_config()
+        conn = MySQLConnection(**db_config)
+        if conn.is_connected():
+            c = conn.cursor()
+            sql = f"SELECT userid from factions where roleid=%(roleid)s;"
+            user_data = {
+                'roleid': roleid,
+            }
+            c.execute(sql, user_data)
+            response = c.fetchone()
+            if not response:
+                return None
+            c.close()
+            conn.close()
+            return response
+        else:
+            return 'Connection to database failed.'
+    except Error as e:
+        print(e)
+        return e
+
 
 async def setLeader(roleid, userid):
     try:
@@ -160,6 +183,60 @@ class SEcommands(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="alliance-add", description="Slash command to add faction leader player to faction alliance channel.")
+    async def allianceadd(self, interaction: discord.Interaction, role: discord.Role):
+        try:
+            await interaction.response.defer(ephemeral=True)
+            allianceleader = await getLeaderid(role.id)
+            leader = await getLeader(interaction.user.id)
+            if leader:
+                # Add user to current channel.
+                user = discord.utils.get(interaction.guild.members, id=allianceleader[0])
+                if user:
+                    await interaction.channel.add_user(user)
+                    await interaction.response.send_message(
+                        content=f"""{user.mention}, you have been added to the channel {interaction.channel.mention}""",
+                        ephemeral=True)
+                else:
+                    await interaction.response.send_message(
+                        content=f"""There is no registered leader for role {role.name}""",
+                        ephemeral=True)
+            else:
+                await interaction.response.send_message(
+                    content=f"""You don't have proper permissions to run this command.""",
+                    ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="alliance-remove",
+                          description="Slash command to remove faction leader player from faction alliance channel.")
+    async def allianceremove(self, interaction: discord.Interaction, role: discord.Role):
+        try:
+            await interaction.response.defer(ephemeral=True)
+            allianceleader = await getLeaderid(role.id)
+            leader = await getLeader(interaction.user.id)
+            if leader:
+                # Remove user from current channel.
+                user = discord.utils.get(interaction.guild.members, id=allianceleader[0])
+                if user:
+                    await interaction.channel.remove_user(user)
+                    await interaction.response.send_message(
+                        content=f"""{user.name} has been removed from {interaction.channel.mention}""",
+                        ephemeral=True)
+                else:
+                    await interaction.response.send_message(
+                        content=f"""There is no registered leader for role {role.name}""",
+                        ephemeral=True)
+            else:
+                await interaction.response.send_message(
+                    content=f"""You don't have proper permissions to run this command.""",
+                    ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(SEcommands(bot))
