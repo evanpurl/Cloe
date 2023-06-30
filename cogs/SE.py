@@ -187,25 +187,24 @@ class SEcommands(commands.Cog):
     @app_commands.command(name="alliance-add", description="Slash command to add faction leader player to faction alliance channel.")
     async def allianceadd(self, interaction: discord.Interaction, role: discord.Role):
         try:
-            await interaction.response.defer(ephemeral=True)
             allianceleader = await getLeaderid(role.id)
             leader = await getLeader(interaction.user.id)
             if leader:
+                await interaction.response.defer(ephemeral=True)
                 # Add user to current channel.
                 user = discord.utils.get(interaction.guild.members, id=allianceleader[0])
                 if user:
                     overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
-                    await interaction.client.edit_channel_permissions(interaction.channel,
-                                                          user, overwrite)
-                    await interaction.response.send_message(
+                    await interaction.channel.set_permissions(target=user, overwrite=overwrite)
+                    await interaction.followup.send(
                         content=f"""{user.mention}, you have been added to the channel {interaction.channel.mention}""",
                         ephemeral=True)
                 else:
-                    await interaction.response.send_message(
+                    await interaction.followup.send(
                         content=f"""There is no registered leader for role {role.name}""",
                         ephemeral=True)
             else:
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     content=f"""You don't have proper permissions to run this command.""",
                     ephemeral=True)
         except Exception as e:
@@ -217,25 +216,24 @@ class SEcommands(commands.Cog):
                           description="Slash command to remove faction leader player from faction alliance channel.")
     async def allianceremove(self, interaction: discord.Interaction, role: discord.Role):
         try:
-            await interaction.response.defer(ephemeral=True)
             allianceleader = await getLeaderid(role.id)
             leader = await getLeader(interaction.user.id)
             if leader:
+                await interaction.response.defer(ephemeral=True)
                 # Remove user from current channel.
                 user = discord.utils.get(interaction.guild.members, id=allianceleader[0])
                 if user:
                     overwrite = discord.PermissionOverwrite(read_messages=False, send_messages=False)
-                    await interaction.client.edit_channel_permissions(interaction.channel,
-                                                                      user, overwrite)
-                    await interaction.response.send_message(
+                    await interaction.channel.set_permissions(target=user, overwrite=overwrite)
+                    await interaction.followup.send(
                         content=f"""{user.name} has been removed from {interaction.channel.mention}""",
                         ephemeral=True)
                 else:
-                    await interaction.response.send_message(
+                    await interaction.followup.send(
                         content=f"""There is no registered leader for role {role.name}""",
                         ephemeral=True)
             else:
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     content=f"""You don't have proper permissions to run this command.""",
                     ephemeral=True)
         except Exception as e:
