@@ -32,6 +32,7 @@ async def getLeader(userid):
         print(e)
         return e
 
+
 async def getLeaderid(roleid):
     try:
         db_config = read_db_config()
@@ -180,13 +181,15 @@ class SEcommands(commands.Cog):
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
             voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
 
-            await interaction.followup.send(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
+            await interaction.followup.send(
+                content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.guilds(SEServer)
-    @app_commands.command(name="alliance-add", description="Slash command to add faction leader player to faction alliance channel.")
+    @app_commands.command(name="alliance-add",
+                          description="Slash command to add faction leader player to faction alliance channel.")
     async def allianceadd(self, interaction: discord.Interaction, role: discord.Role):
         try:
             leader = await getLeader(interaction.user.id)
@@ -259,7 +262,7 @@ class SEcommands(commands.Cog):
 
     @app_commands.guilds(SEServer)
     @app_commands.command(name="alliance-delete",
-                          description="Slash command to delete a faction alliance channel. "
+                          description="Slash command to delete a faction alliance channel."
                                       "RUN INSIDE ALLIANCE CHANNEL ONLY!")
     async def alliancedelete(self, interaction: discord.Interaction):
         try:
@@ -276,6 +279,56 @@ class SEcommands(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="pc", description="Slash command to toggle the pc server role.")
+    async def pccmd(self, interaction: discord.Interaction):
+        try:
+            prole = await dbget(interaction.guild.id, self.bot.user.name, "pcrole")
+            role = discord.utils.get(interaction.guild.roles, id=prole[0])
+            if role:
+                if role in interaction.user.roles:
+                    await interaction.user.remove_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""You have been removed from the role {role.name}.""",
+                        ephemeral=True)
+                else:
+                    await interaction.user.add_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""You have been added to role {role.name}.""",
+                        ephemeral=True)
+            else:
+                await interaction.response.send_message(content=f"""No pc role exists.""",
+                                                        ephemeral=True)
+        except discord.Forbidden:
+            await interaction.response.send_message(content=f"""Unable to set your role, make sure my role is higher 
+            than the role you're trying to add!""",
+                                                    ephemeral=True)
+
+    @app_commands.guilds(SEServer)
+    @app_commands.command(name="cross", description="Slash command to toggle the cross platform server role.")
+    async def crossrolecmd(self, interaction: discord.Interaction):
+        try:
+            prole = await dbget(interaction.guild.id, self.bot.user.name, "crossrole")
+            role = discord.utils.get(interaction.guild.roles, id=prole[0])
+            if role:
+                if role in interaction.user.roles:
+                    await interaction.user.remove_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""You have been removed from the role {role.name}.""",
+                        ephemeral=True)
+                else:
+                    await interaction.user.add_roles(role)
+                    await interaction.response.send_message(
+                        content=f"""You have been added to role {role.name}.""",
+                        ephemeral=True)
+            else:
+                await interaction.response.send_message(content=f"""No pc role exists.""",
+                                                        ephemeral=True)
+        except discord.Forbidden:
+            await interaction.response.send_message(content=f"""Unable to set your role, make sure my role is higher 
+                than the role you're trying to add!""",
+                                                    ephemeral=True)
+
     @allianceadd.error
     @allianceremove.error
     @factioncreate.error
@@ -286,6 +339,7 @@ class SEcommands(commands.Cog):
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
+
 
 async def setup(bot):
     await bot.add_cog(SEcommands(bot))
