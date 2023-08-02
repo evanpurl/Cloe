@@ -279,56 +279,6 @@ class SEcommands(commands.Cog):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
-    @app_commands.guilds(SEServer)
-    @app_commands.command(name="pc", description="Slash command to toggle the pc server role.")
-    async def pccmd(self, interaction: discord.Interaction):
-        try:
-            prole = await dbget(interaction.guild.id, self.bot.user.name, "pcrole")
-            role = discord.utils.get(interaction.guild.roles, id=prole[0])
-            if role:
-                if role in interaction.user.roles:
-                    await interaction.user.remove_roles(role)
-                    await interaction.response.send_message(
-                        content=f"""You have been removed from the role {role.name}.""",
-                        ephemeral=True)
-                else:
-                    await interaction.user.add_roles(role)
-                    await interaction.response.send_message(
-                        content=f"""You have been added to role {role.name}.""",
-                        ephemeral=True)
-            else:
-                await interaction.response.send_message(content=f"""No pc role exists.""",
-                                                        ephemeral=True)
-        except discord.Forbidden:
-            await interaction.response.send_message(content=f"""Unable to set your role, make sure my role is higher 
-            than the role you're trying to add!""",
-                                                    ephemeral=True)
-
-    @app_commands.guilds(SEServer)
-    @app_commands.command(name="cross", description="Slash command to toggle the cross platform server role.")
-    async def crossrolecmd(self, interaction: discord.Interaction):
-        try:
-            prole = await dbget(interaction.guild.id, self.bot.user.name, "crossrole")
-            role = discord.utils.get(interaction.guild.roles, id=prole[0])
-            if role:
-                if role in interaction.user.roles:
-                    await interaction.user.remove_roles(role)
-                    await interaction.response.send_message(
-                        content=f"""You have been removed from the role {role.name}.""",
-                        ephemeral=True)
-                else:
-                    await interaction.user.add_roles(role)
-                    await interaction.response.send_message(
-                        content=f"""You have been added to role {role.name}.""",
-                        ephemeral=True)
-            else:
-                await interaction.response.send_message(content=f"""No pc role exists.""",
-                                                        ephemeral=True)
-        except discord.Forbidden:
-            await interaction.response.send_message(content=f"""Unable to set your role, make sure my role is higher 
-                than the role you're trying to add!""",
-                                                    ephemeral=True)
-
     @allianceadd.error
     @allianceremove.error
     @factioncreate.error
