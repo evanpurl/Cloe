@@ -32,6 +32,7 @@ async def getLeader(userid):
         print(e)
         return e
 
+
 async def getLeaderid(roleid):
     try:
         db_config = read_db_config()
@@ -180,13 +181,15 @@ class SEcommands(commands.Cog):
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
             voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
 
-            await interaction.followup.send(content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
+            await interaction.followup.send(
+                content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
         except Exception as e:
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
     @app_commands.guilds(SEServer)
-    @app_commands.command(name="alliance-add", description="Slash command to add faction leader player to faction alliance channel.")
+    @app_commands.command(name="alliance-add",
+                          description="Slash command to add faction leader player to faction alliance channel.")
     async def allianceadd(self, interaction: discord.Interaction, role: discord.Role):
         try:
             leader = await getLeader(interaction.user.id)
@@ -259,7 +262,7 @@ class SEcommands(commands.Cog):
 
     @app_commands.guilds(SEServer)
     @app_commands.command(name="alliance-delete",
-                          description="Slash command to delete a faction alliance channel. "
+                          description="Slash command to delete a faction alliance channel."
                                       "RUN INSIDE ALLIANCE CHANNEL ONLY!")
     async def alliancedelete(self, interaction: discord.Interaction):
         try:
@@ -286,6 +289,7 @@ class SEcommands(commands.Cog):
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
+
 
 async def setup(bot):
     await bot.add_cog(SEcommands(bot))
