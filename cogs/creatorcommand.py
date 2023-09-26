@@ -12,8 +12,8 @@ class creatorcmd(commands.Cog):
     async def creator(self, interaction: discord.Interaction):
         try:
             await interaction.response.send_message(
-                content=f"""{interaction.user.mention}, {self.bot.user.name} was created by Purls, and is hosted by 
-                Wyvern server hosting. Want your own bot? Head to https://discord.gg/Wdunj8yCxZ""",
+                content=f"""{interaction.user.mention}, {self.bot.user.name} was created by Purls. Want your own bot? 
+                Head to https://discord.gg/Wdunj8yCxZ""",
                 ephemeral=True)
         except Exception as e:
             print(e)

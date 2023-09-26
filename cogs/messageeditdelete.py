@@ -1,9 +1,8 @@
 import datetime
 
 import discord
-from discord import app_commands
 from discord.ext import commands
-from util.dbsetget import dbset, dbget
+from retiredcogs.dbsetget import dbget
 
 
 class messageeditdeletecmds(commands.Cog):

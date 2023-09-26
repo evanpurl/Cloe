@@ -1,9 +1,8 @@
 import datetime
 
 import discord
-from discord import app_commands
 from discord.ext import commands
-from util.dbsetget import dbget, dbset
+from retiredcogs.dbsetget import dbget
 
 "needs welcomechannelid in db"
 

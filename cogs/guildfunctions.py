@@ -1,7 +1,7 @@
-from discord.ext import commands
-from database.database import createserver, deleteserver
+import os
 
-"Needs serverid, servername in db"
+from discord.ext import commands
+from util.load_data import loadserverdata
 
 
 class guildfunctions(commands.Cog):
@@ -11,11 +11,12 @@ class guildfunctions(commands.Cog):
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
-        await createserver(guild.id, self.bot.user.name, guild.name)  # Creates server row in database
+        await loadserverdata(guild.id)
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
-        await deleteserver(guild.id, self.bot.user.name)  # Deletes server row in database.
+        if os.path.exists(f"storage/{guild.id}"):
+            os.remove(f"storage/{guild.id}")
 
 
 async def setup(bot):

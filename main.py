@@ -15,8 +15,6 @@ install_requirements()
 import discord
 from util.load_extensions import load_extensions  # Our code
 from discord.ext import commands
-from database.database import gettoken  # Our code
-from database.testdbconnection import connect  # Our code
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -29,10 +27,9 @@ client = commands.Bot(command_prefix="$", intents=intents)
 async def main():
     async with client:
         try:
-            token = await gettoken("c1o3")
-            await connect()  # Tests database connection
+            token = os.getenv('token')
             await load_extensions(client)
-            await client.start(token[0])
+            await client.start(token)
         except KeyboardInterrupt:
             pass
 

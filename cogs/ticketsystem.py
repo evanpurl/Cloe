@@ -3,9 +3,9 @@ import datetime
 import io
 import chat_exporter
 import discord
-from discord import app_commands, ui
+from discord import app_commands
 from discord.ext import commands
-from util.dbsetget import dbget, dbset
+from util.sqlitefunctions import getconfig, create_db
 
 timeout = 300  # seconds
 
@@ -32,9 +32,10 @@ class ticketbuttonpanel(discord.ui.View):
                        custom_id="Cloe:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            lchanid = await getconfig(conn, "transcriptchannelid")
             logchannel = discord.utils.get(interaction.guild.channels,
-                                           id=lchanid[0])
+                                           id=lchanid)
             if logchannel:
                 transcript = await chat_exporter.export(
                     interaction.channel,
@@ -67,9 +68,10 @@ class ticketbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
-                    lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
+                    conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+                    lchanid = await getconfig(conn, "transcriptchannelid")
                     logchannel = discord.utils.get(interaction.guild.channels,
-                                                   id=lchanid[0])
+                                                   id=lchanid)
                     if logchannel:
                         transcript = await chat_exporter.export(
                             interaction.channel,
@@ -130,9 +132,10 @@ class ticketbutton(discord.ui.View):
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                     except asyncio.TimeoutError:
-                        lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
+                        conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+                        lchanid = await getconfig(conn, "transcriptchannelid")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid[0])
+                                                       id=lchanid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,
@@ -166,9 +169,10 @@ class ticketbutton(discord.ui.View):
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                     except asyncio.TimeoutError:
-                        lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
+                        conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+                        lchanid = await getconfig(conn, "transcriptchannelid")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid[0])
+                                                       id=lchanid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,

@@ -3,11 +3,11 @@ import datetime
 import io
 
 import discord
-from discord import app_commands, ui
+from discord import app_commands
 from discord.ext import commands
 from chat_exporter import chat_exporter
 
-from util.dbsetget import dbset, dbget
+from util.sqlitefunctions import create_db, getconfig
 
 timeout = 300  # seconds
 
@@ -32,8 +32,9 @@ class reportbuttonpanel(discord.ui.View):
                        custom_id="cloereport:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "transcriptchannelid")
-            channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            lchanid = await getconfig(conn, "transcriptchannelid")
+            channel = discord.utils.get(interaction.guild.channels, id=lchanid)
             if channel:
                 await interaction.response.defer(ephemeral=True)
                 transcript = await chat_exporter.export(
@@ -67,8 +68,9 @@ class reportbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
-                    msgchnl = await dbget(interaction.guild.id, interaction.client.user.name, "transcriptchannelid")
-                    channel = discord.utils.get(interaction.guild.channels, id=msgchnl[0])
+                    conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+                    lchanid = await getconfig(conn, "transcriptchannelid")
+                    channel = discord.utils.get(interaction.guild.channels, id=lchanid)
                     if channel:
                         await interaction.response.defer(ephemeral=True)
                         transcript = await chat_exporter.export(
@@ -100,9 +102,10 @@ class reportbutton(discord.ui.View):
                        custom_id="reportbutton")
     async def gray_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            cat = await dbget(serverid=interaction.guild.id, bot=interaction.client.user.name, valuetoget="categoryid")
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            cat = await getconfig(conn, "ticketcategoryid")
             existticket = discord.utils.get(interaction.guild.channels,
-                                            name=f"report-{interaction.user.name.lower()}{interaction.user.discriminator}")
+                                            name=f"report-{interaction.user.name.lower()}")
             if existticket:
                 await interaction.response.send_message(
                     content=f"You already have an existing report you silly goose. {existticket.mention}",
@@ -112,10 +115,10 @@ class reportbutton(discord.ui.View):
                     interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     interaction.user: discord.PermissionOverwrite(read_messages=True),
                     interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-                ticketcat = discord.utils.get(interaction.guild.categories, id=cat[0])
+                ticketcat = discord.utils.get(interaction.guild.categories, id=cat)
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
-                        f"report-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
+                        f"report-{interaction.user.name}", category=ticketcat,
                         overwrites=overwrites)
                     await interaction.response.send_message(content=f"Report created in {ticketchan.mention}!",
                                                             ephemeral=True)
@@ -135,7 +138,7 @@ class reportbutton(discord.ui.View):
 
                 else:
                     ticketchan = await interaction.guild.create_text_channel(
-                        f"report-{interaction.user.name}{interaction.user.discriminator}", overwrites=overwrites)
+                        f"report-{interaction.user.name}", overwrites=overwrites)
                     await interaction.response.send_message(content=f"Report created in {ticketchan.mention}!",
                                                             ephemeral=True)
                     await ticketchan.send(

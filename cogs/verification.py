@@ -1,7 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from util.dbsetget import dbget, dbset
+from util.sqlitefunctions import getconfig, create_db
 
 # Needs "manage role" perms
 "Requires verifiedroleid in db"
@@ -24,8 +24,9 @@ class Verifybuttonpanel(discord.ui.View):
                        custom_id="Cloe:verify")
     async def verify_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            verrole = await dbget(interaction.guild.id, interaction.client.user.name, "verifiedroleid")
-            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            verrole = await getconfig(conn, "verifiedroleid")
+            role = discord.utils.get(interaction.guild.roles, id=verrole)
             if role:
                 if role in interaction.user.roles:
                     await interaction.response.send_message(f"You have already been verified.", ephemeral=True)
@@ -60,8 +61,9 @@ class verification(commands.Cog):
     @app_commands.checks.has_permissions(manage_roles=True)
     async def verifyfor(self, interaction: discord.Interaction, user: discord.User) -> None:
         try:
-            verrole = await dbget(interaction.guild.id, self.bot.user.name, "verifiedroleid")
-            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            verrole = await getconfig(conn, "verifiedroleid")
+            role = discord.utils.get(interaction.guild.roles, id=verrole)
             if role:
                 if role in user.roles:
                     await interaction.response.send_message(f"User has already been verified.", ephemeral=True)
