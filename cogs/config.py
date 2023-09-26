@@ -86,11 +86,24 @@ class setcmd(commands.GroupCog, name="set"):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.checks.has_permissions(manage_roles=True)
+    @app_commands.command(name="ping-role", description="Command for setting your server's Ping role.")
+    async def pingrole(self, interaction: discord.Interaction, role: discord.Role):
+        try:
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            await insertconfig(conn, ["pingroleid", role.id])
+            await interaction.response.send_message(
+                content=f"""Ping Role has been set to {role.name}""", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
     @welcomechannel.error
     @goodbyechannel.error
     @transcriptlogchannel.error
     @defaultrole.error
     @ticketcategory.error
+    @pingrole.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
@@ -178,11 +191,24 @@ class resetcmd(commands.GroupCog, name="reset"):
             print(e)
             await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
 
+    @app_commands.checks.has_permissions(manage_roles=True)
+    @app_commands.command(name="ping-role", description="Command to reset your server's Ping role.")
+    async def pingrole(self, interaction: discord.Interaction):
+        try:
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            await insertconfig(conn, ["pingroleid", 0])
+            await interaction.response.send_message(
+                content=f"""Ping Role has been reset.""", ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
     @welcomechannel.error
     @goodbyechannel.error
     @transcriptlogchannel.error
     @defaultrole.error
     @ticketcategory.error
+    @pingrole.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
