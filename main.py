@@ -27,9 +27,8 @@ client = commands.Bot(command_prefix="$", intents=intents)
 async def main():
     async with client:
         try:
-            token = os.getenv('token')
             await load_extensions(client)
-            await client.start(token)
+            await client.start(os.getenv('token'))
         except KeyboardInterrupt:
             pass
 

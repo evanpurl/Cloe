@@ -2,7 +2,7 @@ import datetime
 
 import discord
 from discord.ext import commands
-from retiredcogs.dbsetget import dbget
+from util.sqlitefunctions import getconfig, create_db
 
 
 class messageeditdeletecmds(commands.Cog):
@@ -13,8 +13,9 @@ class messageeditdeletecmds(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message: discord.Message):
         try:
-            msgchnl = await dbget(message.guild.id, self.bot.user.name, "messagechannelid")
-            channel = discord.utils.get(message.guild.channels, id=msgchnl[0])
+            conn = await create_db(f"storage/{message.guild.id}/configuration.db")
+            msgchnl = await getconfig(conn, "messagechannelid")
+            channel = discord.utils.get(message.guild.channels, id=msgchnl)
             if channel:
                 embed = discord.Embed(
                     title="Message Deleted", color=discord.Color.red(),
@@ -33,8 +34,9 @@ class messageeditdeletecmds(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, message_before: discord.Message, message_after: discord.Message):
         try:
-            msgchnl = await dbget(message_before.guild.id, self.bot.user.name, "messagechannelid")
-            channel = discord.utils.get(message_before.guild.channels, id=msgchnl[0])
+            conn = await create_db(f"storage/{message_before.guild.id}/configuration.db")
+            msgchnl = await getconfig(conn, "messagechannelid")
+            channel = discord.utils.get(message_before.guild.channels, id=msgchnl)
             if channel:
                 embed = discord.Embed(
                     title="Message Edit", color=discord.Color.blue(),

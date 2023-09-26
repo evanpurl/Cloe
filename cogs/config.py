@@ -16,7 +16,7 @@ class setcmd(commands.GroupCog, name="set"):
             conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
             await insertconfig(conn, ["welcomechannelid", channel.id])
             await interaction.response.send_message(
-                f"Welcome Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                f"Welcome Channel has been set to {channel.mention}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -29,7 +29,7 @@ class setcmd(commands.GroupCog, name="set"):
             conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
             await insertconfig(conn, ["goodbyechannelid", channel.id])
             await interaction.response.send_message(
-                f"Goodbye Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                f"Goodbye Channel has been set to {channel.mention}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -42,7 +42,7 @@ class setcmd(commands.GroupCog, name="set"):
             conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
             await insertconfig(conn, ["ticketcategoryid", category.id])
             await interaction.response.send_message(
-                f"Ticket Category has been set to {discord.utils.get(interaction.guild.categories, id=category.id)}.",
+                f"Ticket Category has been set to {category.mention}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -56,7 +56,21 @@ class setcmd(commands.GroupCog, name="set"):
             conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
             await insertconfig(conn, ["transcriptchannelid", channel.id])
             await interaction.response.send_message(
-                f"Transcript Log Channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
+                f"Transcript Log Channel has been set to {channel.mention}.",
+                ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.command(name="message-log-channel",
+                          description="Command to set your server's message log channel.")
+    async def messagelogchannel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        try:
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            await insertconfig(conn, ["messagechannelid", channel.id])
+            await interaction.response.send_message(
+                f"Message Log Channel has been set to {channel.mention}.",
                 ephemeral=True)
         except Exception as e:
             print(e)
@@ -104,6 +118,7 @@ class setcmd(commands.GroupCog, name="set"):
     @defaultrole.error
     @ticketcategory.error
     @pingrole.error
+    @messagelogchannel.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
@@ -162,6 +177,20 @@ class resetcmd(commands.GroupCog, name="reset"):
             await insertconfig(conn, ["transcriptchannelid", 0])
             await interaction.response.send_message(
                 f"Transcript log channel has been reset.",
+                ephemeral=True)
+        except Exception as e:
+            print(e)
+            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
+
+    @app_commands.checks.has_permissions(manage_channels=True)
+    @app_commands.command(name="message-log-channel",
+                          description="Command to reset your server's message log channel.")
+    async def messagelogchannel(self, interaction: discord.Interaction):
+        try:
+            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
+            await insertconfig(conn, ["messagechannelid", 0])
+            await interaction.response.send_message(
+                f"Message log channel has been reset.",
                 ephemeral=True)
         except Exception as e:
             print(e)
