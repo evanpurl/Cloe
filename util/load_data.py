@@ -30,5 +30,11 @@ async def loaddata(guildid):
         await createuniqueindex(conn, f""" CREATE UNIQUE INDEX IF NOT EXISTS idx_config ON config (configname) """)
         # Will add more files as needed.
         print("Data confirmed!")
+        if guildid == 955962668756385792:
+            tabledata = """CREATE TABLE IF NOT EXISTS SE ( userid integer NOT NULL, roleid integer);"""
+            conn = await create_db(f"storage/{guildid}/SE.db")
+            await create_table(conn, tabledata)
+            await createuniqueindex(conn, f""" CREATE UNIQUE INDEX IF NOT EXISTS idx_userid ON SE (userid) """)
+            print("Loaded SE Data.")
     except Error or Exception as e:
         print(f"load data function, guildid {guildid} ({e})")
