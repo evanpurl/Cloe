@@ -3,7 +3,6 @@ from discord import app_commands
 from discord.ext import commands
 
 from util.databasefunctions import create_pool, insert
-from util.sqlitefunctions import create_db, insertconfig
 
 
 class setcmd(commands.GroupCog, name="set"):

@@ -1,5 +1,3 @@
-import os
-
 from discord.ext import commands
 
 from util.databasefunctions import createserver, create_pool, deleteserver

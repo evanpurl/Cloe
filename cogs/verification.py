@@ -1,6 +1,8 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+from util.databasefunctions import get, create_pool
 from util.sqlitefunctions import getconfig, create_db
 
 # Needs "manage role" perms
@@ -24,9 +26,10 @@ class Verifybuttonpanel(discord.ui.View):
                        custom_id="Cloe:verify")
     async def verify_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-            verrole = await getconfig(conn, "verifiedroleid")
-            role = discord.utils.get(interaction.guild.roles, id=verrole)
+            pool = await create_pool()
+            verrole = await get(pool,
+                                f"SELECT verifiedroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
             if role:
                 if role in interaction.user.roles:
                     await interaction.response.send_message(f"You have already been verified.", ephemeral=True)
@@ -61,9 +64,10 @@ class verification(commands.Cog):
     @app_commands.checks.has_permissions(manage_roles=True)
     async def verifyfor(self, interaction: discord.Interaction, user: discord.User) -> None:
         try:
-            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-            verrole = await getconfig(conn, "verifiedroleid")
-            role = discord.utils.get(interaction.guild.roles, id=verrole)
+            pool = await create_pool()
+            verrole = await get(pool,
+                                f"SELECT verifiedroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
             if role:
                 if role in user.roles:
                     await interaction.response.send_message(f"User has already been verified.", ephemeral=True)

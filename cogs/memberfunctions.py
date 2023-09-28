@@ -1,11 +1,9 @@
 import datetime
 
 import discord
-from discord import app_commands
 from discord.ext import commands
 
 from util.databasefunctions import get, create_pool
-from util.sqlitefunctions import getconfig, create_db
 
 "needs welcomechannelid in db"
 

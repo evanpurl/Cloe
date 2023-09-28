@@ -7,7 +7,7 @@ from discord import app_commands
 from discord.ext import commands
 from chat_exporter import chat_exporter
 
-from util.sqlitefunctions import create_db, getconfig
+from util.databasefunctions import create_pool, get
 
 timeout = 300  # seconds
 
@@ -32,9 +32,10 @@ class reportbuttonpanel(discord.ui.View):
                        custom_id="cloereport:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-            lchanid = await getconfig(conn, "transcriptchannelid")
-            channel = discord.utils.get(interaction.guild.channels, id=lchanid)
+            pool = await create_pool()
+            lchanid = await get(pool,
+                                f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+            channel = discord.utils.get(interaction.guild.channels, id=lchanid[0])
             if channel:
                 await interaction.response.defer(ephemeral=True)
                 transcript = await chat_exporter.export(
@@ -68,9 +69,10 @@ class reportbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
-                    conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-                    lchanid = await getconfig(conn, "transcriptchannelid")
-                    channel = discord.utils.get(interaction.guild.channels, id=lchanid)
+                    pool = await create_pool()
+                    lchanid = await get(pool,
+                                        f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+                    channel = discord.utils.get(interaction.guild.channels, id=lchanid[0])
                     if channel:
                         await interaction.response.defer(ephemeral=True)
                         transcript = await chat_exporter.export(
@@ -102,8 +104,9 @@ class reportbutton(discord.ui.View):
                        custom_id="reportbutton")
     async def gray_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-            cat = await getconfig(conn, "ticketcategoryid")
+            pool = await create_pool()
+            cat = await get(pool,
+                            f"SELECT ticketcategoryid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
             existticket = discord.utils.get(interaction.guild.channels,
                                             name=f"report-{interaction.user.name.lower()}")
             if existticket:
@@ -115,7 +118,7 @@ class reportbutton(discord.ui.View):
                     interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     interaction.user: discord.PermissionOverwrite(read_messages=True),
                     interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-                ticketcat = discord.utils.get(interaction.guild.categories, id=cat)
+                ticketcat = discord.utils.get(interaction.guild.categories, id=cat[0])
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
                         f"report-{interaction.user.name}", category=ticketcat,

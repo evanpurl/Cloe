@@ -16,6 +16,5 @@ class onready(commands.Cog):
         print(f'We have logged in as {self.bot.user}')
 
 
-
 async def setup(bot):
     await bot.add_cog(onready(bot))

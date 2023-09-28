@@ -1,7 +1,8 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from util.sqlitefunctions import create_db, getconfig
+
+from util.databasefunctions import create_pool, get
 
 "Needs pingroleid column in db"
 
@@ -14,9 +15,10 @@ class pingcmd(commands.Cog):
     @app_commands.command(name="ping", description="Slash command to add people to the Ping role.")
     async def ping(self, interaction: discord.Interaction):
         try:
-            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-            prole = await getconfig(conn, "pingroleid")
-            role = discord.utils.get(interaction.guild.roles, id=prole)
+            pool = await create_pool()
+            prole = await get(pool,
+                             f"SELECT pingroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+            role = discord.utils.get(interaction.guild.roles, id=prole[0])
             if role:
                 if role in interaction.user.roles:
 
