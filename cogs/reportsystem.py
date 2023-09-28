@@ -35,7 +35,7 @@ class reportbuttonpanel(discord.ui.View):
             pool = await create_pool()
             lchanid = await get(pool,
                                 f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
-            channel = discord.utils.get(interaction.guild.channels, id=lchanid[0])
+            channel = discord.utils.get(interaction.guild.channels, id=lchanid)
             if channel:
                 await interaction.response.defer(ephemeral=True)
                 transcript = await chat_exporter.export(
@@ -72,7 +72,7 @@ class reportbuttonpanel(discord.ui.View):
                     pool = await create_pool()
                     lchanid = await get(pool,
                                         f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
-                    channel = discord.utils.get(interaction.guild.channels, id=lchanid[0])
+                    channel = discord.utils.get(interaction.guild.channels, id=lchanid)
                     if channel:
                         await interaction.response.defer(ephemeral=True)
                         transcript = await chat_exporter.export(
@@ -118,7 +118,7 @@ class reportbutton(discord.ui.View):
                     interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     interaction.user: discord.PermissionOverwrite(read_messages=True),
                     interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-                ticketcat = discord.utils.get(interaction.guild.categories, id=cat[0])
+                ticketcat = discord.utils.get(interaction.guild.categories, id=cat)
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
                         f"report-{interaction.user.name}", category=ticketcat,

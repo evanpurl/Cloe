@@ -34,7 +34,7 @@ class memberfunctions(commands.Cog):
         try:
             pool = await create_pool()
             data = await get(pool, f"SELECT welcomechannelid, defaultroleid FROM {self.bot.user.name} WHERE serverid={member.guild.id}")
-            channel = discord.utils.get(member.guild.channels, id=data[0])
+            channel = discord.utils.get(member.guild.channels, id=data)
             if channel:
                 await channel.send(embed=userembed(member, member.guild))
             role = discord.utils.get(member.guild.roles, id=data[1])
@@ -48,7 +48,7 @@ class memberfunctions(commands.Cog):
         pool = await create_pool()
         data = await get(pool,
                          f"SELECT goodbyechannelid FROM {self.bot.user.name} WHERE serverid={member.guild.id}")
-        channel = discord.utils.get(member.guild.channels, id=data[0])
+        channel = discord.utils.get(member.guild.channels, id=data)
         if channel:
             await channel.send(embed=userembedbye(member))
 

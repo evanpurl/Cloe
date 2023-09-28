@@ -18,7 +18,7 @@ class pingcmd(commands.Cog):
             pool = await create_pool()
             prole = await get(pool,
                              f"SELECT pingroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
-            role = discord.utils.get(interaction.guild.roles, id=prole[0])
+            role = discord.utils.get(interaction.guild.roles, id=prole)
             if role:
                 if role in interaction.user.roles:
 

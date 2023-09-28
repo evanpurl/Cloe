@@ -1,40 +1,47 @@
-import os.path
-from sqlite3 import Error
+import discord
 
-from util.sqlitefunctions import create_db, create_table, createuniqueindex
+from util.databasefunctions import create_pool, getall, createserver
+from util.sqlitefunctions import create_db, createuniqueindex, create_table
 
 
-async def loadallservers(serverlist):
+async def loadallservers(bot, serverlist):
+    servers = []
     for a in serverlist:
-        await loaddata(a.id)
+        servers.append(a.id)
+    await loaddata(bot, servers)
 
 
-async def loadserverdata(guildid):
-    await loaddata(guildid)
-
-
-async def loaddata(guildid):
+async def loaddata(bot, guildlist):
     """
     Function that loads sqlite data.
-    :type guildid: int
+    :param guildlist:
+    :param bot:
     :return:
     """
-    if not os.path.exists(f"storage/{guildid}"):
-        os.makedirs(f"storage/{guildid}", exist_ok=True)
-    if not os.path.exists(f"storage/global"):
-        os.makedirs(f"storage/global", exist_ok=True)
     try:
-        tabledata = """CREATE TABLE IF NOT EXISTS config ( configname text NOT NULL, option integer);"""
-        conn = await create_db(f"storage/{guildid}/configuration.db")
+        pool = await create_pool()
+
+        data = await getall(pool, f"SELECT serverid FROM {bot.user.name}")
+
+        missing = set(guildlist).difference(data)
+
+        if len(missing) > 0:
+            pool = await create_pool()
+            for a in missing:
+                guild = await bot.fetch_guild(a)
+                print(f"Creating data for {guild.name}")
+                await createserver(pool, f"""INSERT IGNORE INTO {bot.user.name} (serverid, servername) VALUES ({guild.id}, "{guild.name}");""")
+                print(f"Data confirmed for guild {guild.name}")
+
+        print("Data confirmed")
+
+        #  SE Specific Section
+        guild = await bot.fetch_guild(955962668756385792)
+        tabledata = """CREATE TABLE IF NOT EXISTS SE ( userid integer NOT NULL, roleid integer);"""
+        conn = await create_db(f"storage/{guild.id}/SE.db")
         await create_table(conn, tabledata)
-        await createuniqueindex(conn, f""" CREATE UNIQUE INDEX IF NOT EXISTS idx_config ON config (configname) """)
-        # Will add more files as needed.
-        print("Data confirmed!")
-        if guildid == 955962668756385792:
-            tabledata = """CREATE TABLE IF NOT EXISTS SE ( userid integer NOT NULL, roleid integer);"""
-            conn = await create_db(f"storage/{guildid}/SE.db")
-            await create_table(conn, tabledata)
-            await createuniqueindex(conn, f""" CREATE UNIQUE INDEX IF NOT EXISTS idx_userid ON SE (userid) """)
-            print("Loaded SE Data.")
-    except Error or Exception as e:
-        print(f"load data function, guildid {guildid} ({e})")
+        await createuniqueindex(conn, f""" CREATE UNIQUE INDEX IF NOT EXISTS idx_userid ON SE (userid) """)
+        print("Loaded SE Data.")
+        #
+    except Exception as e:
+        print(f"load data function, ({e})")

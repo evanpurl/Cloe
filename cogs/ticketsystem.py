@@ -37,7 +37,7 @@ class ticketbuttonpanel(discord.ui.View):
             lchanid = await get(pool,
                                 f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
             logchannel = discord.utils.get(interaction.guild.channels,
-                                           id=lchanid[0])
+                                           id=lchanid)
             if logchannel:
                 transcript = await chat_exporter.export(
                     interaction.channel,
@@ -74,7 +74,7 @@ class ticketbuttonpanel(discord.ui.View):
                     lchanid = await get(pool,
                                         f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                     logchannel = discord.utils.get(interaction.guild.channels,
-                                                   id=lchanid[0])
+                                                   id=lchanid)
                     if logchannel:
                         transcript = await chat_exporter.export(
                             interaction.channel,
@@ -119,7 +119,7 @@ class ticketbutton(discord.ui.View):
                     interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     interaction.user: discord.PermissionOverwrite(read_messages=True),
                     interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-                ticketcat = discord.utils.get(interaction.guild.categories, id=cat[0])
+                ticketcat = discord.utils.get(interaction.guild.categories, id=cat)
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
                         f"ticket-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
@@ -142,7 +142,7 @@ class ticketbutton(discord.ui.View):
                         lchanid = await get(pool,
                                             f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid[0])
+                                                       id=lchanid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,
@@ -180,7 +180,7 @@ class ticketbutton(discord.ui.View):
                         lchanid = await get(pool,
                                             f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid[0])
+                                                       id=lchanid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,

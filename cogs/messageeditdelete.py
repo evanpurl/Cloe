@@ -17,7 +17,7 @@ class messageeditdeletecmds(commands.Cog):
             pool = await create_pool()
             msgchnl = await get(pool,
                                 f"SELECT messagechannelid FROM {self.bot.user.name} WHERE serverid={message.guild.id}")
-            channel = discord.utils.get(message.guild.channels, id=msgchnl[0])
+            channel = discord.utils.get(message.guild.channels, id=msgchnl)
             if channel:
                 embed = discord.Embed(
                     title="Message Deleted", color=discord.Color.red(),
@@ -35,7 +35,7 @@ class messageeditdeletecmds(commands.Cog):
             pool = await create_pool()
             msgchnl = await get(pool,
                                 f"SELECT messagechannelid FROM {self.bot.user.name} WHERE serverid={message_after.guild.id}")
-            channel = discord.utils.get(message_before.guild.channels, id=msgchnl[0])
+            channel = discord.utils.get(message_before.guild.channels, id=msgchnl)
             if channel:
                 embed = discord.Embed(
                     title="Message Edit", color=discord.Color.blue(),

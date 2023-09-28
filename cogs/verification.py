@@ -28,14 +28,18 @@ class Verifybuttonpanel(discord.ui.View):
         try:
             pool = await create_pool()
             verrole = await get(pool,
-                                f"SELECT verifiedroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
-            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
-            if role:
-                if role in interaction.user.roles:
-                    await interaction.response.send_message(f"You have already been verified.", ephemeral=True)
+                                f"SELECT verifiedroleid FROM {interaction.client.user.name} WHERE serverid={interaction.guild.id}")
+            if verrole:
+                role = discord.utils.get(interaction.guild.roles, id=verrole)
+                if role:
+                    if role in interaction.user.roles:
+                        await interaction.response.send_message(f"You have already been verified.", ephemeral=True)
+                    else:
+                        await interaction.user.add_roles(role)
+                        await interaction.response.send_message(f"You have been added to the Verified role.",
+                                                                ephemeral=True)
                 else:
-                    await interaction.user.add_roles(role)
-                    await interaction.response.send_message(f"You have been added to the Verified role.",
+                    await interaction.response.send_message(f"Verified role does not exist, please contact an admin.",
                                                             ephemeral=True)
             else:
                 await interaction.response.send_message(f"Verified role does not exist, please contact an admin.",
@@ -45,6 +49,8 @@ class Verifybuttonpanel(discord.ui.View):
             await interaction.response.send_message(
                 content=f"""Unable to set your role, make sure my role is higher than the role you're trying to add!""",
                 ephemeral=True)
+        except Exception as e:
+            print(e)
 
 
 class verification(commands.Cog):
@@ -67,13 +73,17 @@ class verification(commands.Cog):
             pool = await create_pool()
             verrole = await get(pool,
                                 f"SELECT verifiedroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
-            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
-            if role:
-                if role in user.roles:
-                    await interaction.response.send_message(f"User has already been verified.", ephemeral=True)
+            if verrole:
+                role = discord.utils.get(interaction.guild.roles, id=verrole)
+                if role:
+                    if role in user.roles:
+                        await interaction.response.send_message(f"User has already been verified.", ephemeral=True)
+                    else:
+                        await user.add_roles(role)
+                        await interaction.response.send_message(f"User has been added to the Verified role.",
+                                                                ephemeral=True)
                 else:
-                    await user.add_roles(role)
-                    await interaction.response.send_message(f"User has been added to the Verified role.",
+                    await interaction.response.send_message(f"No verified role found, have you ran /setverifiedrole?",
                                                             ephemeral=True)
             else:
                 await interaction.response.send_message(f"No verified role found, have you ran /setverifiedrole?",
