@@ -1,3 +1,5 @@
 discord.py
 chat_exporter
 python-dotenv
+discord
+aiomysql

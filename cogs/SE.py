@@ -1,6 +1,8 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+from util.databasefunctions import create_pool, get
 from util.sqlitefunctions import setSEleader, getSEleader, create_db, getconfig
 
 # ----------------------- SE Section
@@ -88,9 +90,9 @@ class SEcommands(commands.Cog):
     async def factioncreate(self, interaction: discord.Interaction, factionname: str):
         try:
             await interaction.response.defer(ephemeral=True)
-            conn = await create_db(f"storage/{interaction.guild.id}/configuration.db")
-            defrole = await getconfig(conn, "defaultroleid")
-            role = discord.utils.get(interaction.guild.roles, id=defrole)
+            pool = await create_pool()
+            defrole = await get(pool, f"SELECT defaultroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+            role = discord.utils.get(interaction.guild.roles, id=defrole[0])
 
             faction = await interaction.guild.create_role(name=factionname)
 

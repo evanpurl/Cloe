@@ -3,6 +3,8 @@ import datetime
 import discord
 from discord import app_commands
 from discord.ext import commands
+
+from util.databasefunctions import get, create_pool
 from util.sqlitefunctions import getconfig, create_db
 
 "needs welcomechannelid in db"
@@ -32,14 +34,12 @@ class memberfunctions(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         try:
-            conn = await create_db(f"storage/{member.guild.id}/configuration.db")
-            wchannel = await getconfig(conn, "welcomechannelid")
-            channel = discord.utils.get(member.guild.channels, id=wchannel)
+            pool = await create_pool()
+            data = await get(pool, f"SELECT welcomechannelid, defaultroleid FROM {self.bot.user.name} WHERE serverid={member.guild.id}")
+            channel = discord.utils.get(member.guild.channels, id=data[0])
             if channel:
                 await channel.send(embed=userembed(member, member.guild))
-            roleid = await getconfig(conn, "defaultroleid")
-            role = discord.utils.get(member.guild.roles, id=roleid)
-            conn.close()
+            role = discord.utils.get(member.guild.roles, id=data[1])
             if role:
                 await member.add_roles(role)
         except Exception as e:
@@ -47,10 +47,10 @@ class memberfunctions(commands.Cog):
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        conn = await create_db(f"storage/{member.guild.id}/configuration.db")
-        wchannel = await getconfig(conn, "goodbyechannelid")
-        conn.close()
-        channel = discord.utils.get(member.guild.channels, id=wchannel)
+        pool = await create_pool()
+        data = await get(pool,
+                         f"SELECT goodbyechannelid FROM {self.bot.user.name} WHERE serverid={member.guild.id}")
+        channel = discord.utils.get(member.guild.channels, id=data[0])
         if channel:
             await channel.send(embed=userembedbye(member))
 
