@@ -3,7 +3,7 @@ import datetime
 import discord
 from discord.ext import commands
 
-from util.databasefunctions import get, create_pool
+from util.databasefunctions import get, create_pool, getmultiple
 
 "needs welcomechannelid in db"
 
@@ -33,8 +33,9 @@ class memberfunctions(commands.Cog):
     async def on_member_join(self, member):
         try:
             pool = await create_pool()
-            data = await get(pool, f"SELECT welcomechannelid, defaultroleid FROM {self.bot.user.name} WHERE serverid={member.guild.id}")
-            channel = discord.utils.get(member.guild.channels, id=data)
+            data = await getmultiple(pool, f"SELECT welcomechannelid, defaultroleid FROM {self.bot.user.name} WHERE "
+                                           f"serverid={member.guild.id}")
+            channel = discord.utils.get(member.guild.channels, id=data[0])
             if channel:
                 await channel.send(embed=userembed(member, member.guild))
             role = discord.utils.get(member.guild.roles, id=data[1])
