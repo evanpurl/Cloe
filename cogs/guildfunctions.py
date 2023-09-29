@@ -12,7 +12,7 @@ class guildfunctions(commands.Cog):
     async def on_guild_join(self, guild):
         pool = await create_pool()
 
-        await createserver(pool, f"INSERT IGNORE INTO {self.bot.user.name} (serverid, servername) VALUES ({guild.id}, {guild.name});")
+        await createserver(pool, f"""INSERT IGNORE INTO {self.bot.user.name} (serverid) VALUES ({guild.id});""")
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):

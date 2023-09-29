@@ -30,7 +30,7 @@ async def loaddata(bot, guildlist):
             for a in missing:
                 guild = await bot.fetch_guild(a)
                 print(f"Creating data for {guild.name}")
-                await createserver(pool, f"""INSERT IGNORE INTO {bot.user.name} (serverid, servername) VALUES ({guild.id}, "{guild.name}");""")
+                await createserver(pool, f"""INSERT IGNORE INTO {bot.user.name} (serverid) VALUES ({guild.id});""")
                 print(f"Data confirmed for guild {guild.name}")
 
         print("Data confirmed")
