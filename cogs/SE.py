@@ -24,7 +24,7 @@ class SEcommands(commands.Cog):
             leadrole = discord.utils.get(interaction.guild.roles, id=role.id)
             if leadrole:
                 if leadrole not in user.roles:
-                    rolewrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
+                    discord.PermissionOverwrite(read_messages=True, send_messages=True)
                     await user.add_roles(leadrole)
 
                 conn = await create_db(f"storage/{interaction.guild.id}/SE.db")
@@ -92,7 +92,7 @@ class SEcommands(commands.Cog):
             await interaction.response.defer(ephemeral=True)
             pool = await create_pool()
             defrole = await get(pool, f"SELECT defaultroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
-            role = discord.utils.get(interaction.guild.roles, id=defrole[0])
+            role = discord.utils.get(interaction.guild.roles, id=defrole)
 
             faction = await interaction.guild.create_role(name=factionname)
 
@@ -111,7 +111,7 @@ class SEcommands(commands.Cog):
                 }
             category = await interaction.guild.create_category(name=factionname, overwrites=overwrites)
             textchannel = await interaction.guild.create_text_channel(name=f"{factionname}-general", category=category)
-            voicechannel = await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
+            await interaction.guild.create_voice_channel(name=f"{factionname} voice", category=category)
 
             await interaction.followup.send(
                 content=f"""Faction {factionname} role and channels created. {textchannel.mention}""", ephemeral=True)
