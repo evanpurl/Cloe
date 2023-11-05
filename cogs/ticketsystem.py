@@ -13,8 +13,8 @@ timeout = 300  # seconds
 botsdiscord = discord.Object(id=1081357638954123276)  # Bots by Purls Discord
 
 
-# Needs "manage role" perms
-# ticket-usernamediscriminator
+transcriptchannelid = 1081357638954123276
+ticketcategoryid = 1082810862651318312
 
 def ticketembed(bot):
     embed = discord.Embed(description=f"When you are finished, click the close ticket button below. This ticket will "
@@ -33,11 +33,8 @@ class ticketbuttonpanel(discord.ui.View):
                        custom_id="Cloe:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            pool = await create_pool()
-            lchanid = await get(pool,
-                                f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
             logchannel = discord.utils.get(interaction.guild.channels,
-                                           id=lchanid)
+                                           id=transcriptchannelid)
             if logchannel:
                 transcript = await chat_exporter.export(
                     interaction.channel,
@@ -70,11 +67,8 @@ class ticketbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
-                    pool = await create_pool()
-                    lchanid = await get(pool,
-                                        f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                     logchannel = discord.utils.get(interaction.guild.channels,
-                                                   id=lchanid)
+                                                   id=transcriptchannelid)
                     if logchannel:
                         transcript = await chat_exporter.export(
                             interaction.channel,
@@ -106,23 +100,20 @@ class ticketbutton(discord.ui.View):
     async def gray_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             existticket = discord.utils.get(interaction.guild.channels,
-                                            name=f"ticket-{interaction.user.name.lower()}{interaction.user.discriminator}")
+                                            name=f"ticket-{interaction.user.name.lower()}")
             if existticket:
                 await interaction.response.send_message(
                     content=f"You already have an existing ticket you silly goose. {existticket.mention}",
                     ephemeral=True)
             else:
-                pool = await create_pool()
-                cat = await get(pool,
-                                f"SELECT ticketcategoryid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                 overwrites = {
                     interaction.guild.default_role: discord.PermissionOverwrite(read_messages=False),
                     interaction.user: discord.PermissionOverwrite(read_messages=True),
                     interaction.guild.me: discord.PermissionOverwrite(read_messages=True)}
-                ticketcat = discord.utils.get(interaction.guild.categories, id=cat)
+                ticketcat = discord.utils.get(interaction.guild.categories, id=ticketcategoryid)
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
-                        f"ticket-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
+                        f"ticket-{interaction.user.name}", category=ticketcat,
                         overwrites=overwrites)
                     await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
                                                             ephemeral=True)
@@ -138,11 +129,8 @@ class ticketbutton(discord.ui.View):
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                     except asyncio.TimeoutError:
-                        pool = await create_pool()
-                        lchanid = await get(pool,
-                                            f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid)
+                                                       id=transcriptchannelid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,
@@ -161,7 +149,7 @@ class ticketbutton(discord.ui.View):
 
                 else:
                     ticketchan = await interaction.guild.create_text_channel(
-                        f"ticket-{interaction.user.name}{interaction.user.discriminator}", overwrites=overwrites)
+                        f"ticket-{interaction.user.name}", overwrites=overwrites)
                     await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
                                                             ephemeral=True)
                     await ticketchan.send(
@@ -176,11 +164,8 @@ class ticketbutton(discord.ui.View):
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                     except asyncio.TimeoutError:
-                        pool = await create_pool()
-                        lchanid = await get(pool,
-                                            f"SELECT transcriptchannelid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid)
+                                                       id=transcriptchannelid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,
