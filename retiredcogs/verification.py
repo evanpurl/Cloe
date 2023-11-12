@@ -1,7 +1,9 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from util.dbsetget import dbget, dbset
+
+from util.databasefunctions import get, create_pool
+from util.sqlitefunctions import getconfig, create_db
 
 # Needs "manage role" perms
 "Requires verifiedroleid in db"
@@ -24,14 +26,20 @@ class Verifybuttonpanel(discord.ui.View):
                        custom_id="Cloe:verify")
     async def verify_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            verrole = await dbget(interaction.guild.id, interaction.client.user.name, "verifiedroleid")
-            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
-            if role:
-                if role in interaction.user.roles:
-                    await interaction.response.send_message(f"You have already been verified.", ephemeral=True)
+            pool = await create_pool()
+            verrole = await get(pool,
+                                f"SELECT verifiedroleid FROM {interaction.client.user.name} WHERE serverid={interaction.guild.id}")
+            if verrole:
+                role = discord.utils.get(interaction.guild.roles, id=verrole)
+                if role:
+                    if role in interaction.user.roles:
+                        await interaction.response.send_message(f"You have already been verified.", ephemeral=True)
+                    else:
+                        await interaction.user.add_roles(role)
+                        await interaction.response.send_message(f"You have been added to the Verified role.",
+                                                                ephemeral=True)
                 else:
-                    await interaction.user.add_roles(role)
-                    await interaction.response.send_message(f"You have been added to the Verified role.",
+                    await interaction.response.send_message(f"Verified role does not exist, please contact an admin.",
                                                             ephemeral=True)
             else:
                 await interaction.response.send_message(f"Verified role does not exist, please contact an admin.",
@@ -41,6 +49,8 @@ class Verifybuttonpanel(discord.ui.View):
             await interaction.response.send_message(
                 content=f"""Unable to set your role, make sure my role is higher than the role you're trying to add!""",
                 ephemeral=True)
+        except Exception as e:
+            print(e)
 
 
 class verification(commands.Cog):
@@ -60,14 +70,20 @@ class verification(commands.Cog):
     @app_commands.checks.has_permissions(manage_roles=True)
     async def verifyfor(self, interaction: discord.Interaction, user: discord.User) -> None:
         try:
-            verrole = await dbget(interaction.guild.id, self.bot.user.name, "verifiedroleid")
-            role = discord.utils.get(interaction.guild.roles, id=verrole[0])
-            if role:
-                if role in user.roles:
-                    await interaction.response.send_message(f"User has already been verified.", ephemeral=True)
+            pool = await create_pool()
+            verrole = await get(pool,
+                                f"SELECT verifiedroleid FROM {self.bot.user.name} WHERE serverid={interaction.guild.id}")
+            if verrole:
+                role = discord.utils.get(interaction.guild.roles, id=verrole)
+                if role:
+                    if role in user.roles:
+                        await interaction.response.send_message(f"User has already been verified.", ephemeral=True)
+                    else:
+                        await user.add_roles(role)
+                        await interaction.response.send_message(f"User has been added to the Verified role.",
+                                                                ephemeral=True)
                 else:
-                    await user.add_roles(role)
-                    await interaction.response.send_message(f"User has been added to the Verified role.",
+                    await interaction.response.send_message(f"No verified role found, have you ran /setverifiedrole?",
                                                             ephemeral=True)
             else:
                 await interaction.response.send_message(f"No verified role found, have you ran /setverifiedrole?",
@@ -77,27 +93,7 @@ class verification(commands.Cog):
                 content=f"""Unable to set your role, make sure my role is higher than the role you're trying to add!""",
                 ephemeral=True)
 
-    @app_commands.command(name="setverifiedrole", description="Command used to set the Verified role")
-    @app_commands.checks.has_permissions(manage_roles=True)
-    async def verifiedrole(self, interaction: discord.Interaction, role: discord.Role) -> None:
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "verifiedroleid", role.id)
-            await interaction.response.send_message(content=f"Verified role set to {role.mention}", ephemeral=True)
-        except Exception as e:
-            print(e)
-
-    @app_commands.command(name="resetverifiedrole", description="Command used to reset the Verified role")
-    @app_commands.checks.has_permissions(manage_roles=True)
-    async def resetverifiedrole(self, interaction: discord.Interaction) -> None:
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "verifiedroleid", 0)
-            await interaction.response.send_message(f"Verified Role config has been reset.", ephemeral=True)
-        except Exception as e:
-            print(e)
-
     @verifyfor.error
-    @verifiedrole.error
-    @resetverifiedrole.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,
                                                 ephemeral=True)
