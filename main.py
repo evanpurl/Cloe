@@ -1,9 +1,10 @@
 import asyncio
+import os
+
 import discord
 from util.load_extensions import load_extensions  # Our code
 from discord.ext import commands
-from database.database import gettoken  # Our code
-from database.testdbconnection import connect  # Our code
+from dotenv import load_dotenv
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -11,15 +12,16 @@ intents.members = True
 
 client = commands.Bot(command_prefix="$", intents=intents)
 
+load_dotenv()
+
 
 # Main function to load extensions and then load bot.
 async def main():
     async with client:
         try:
-            token = await gettoken("c1o3")
-            await connect()  # Tests database connection
+
             await load_extensions(client)
-            await client.start(token[0])
+            await client.start(os.getenv('token'))
         except KeyboardInterrupt:
             pass
 

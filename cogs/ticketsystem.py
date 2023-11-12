@@ -5,7 +5,8 @@ import chat_exporter
 import discord
 from discord import app_commands, ui
 from discord.ext import commands
-from util.dbsetget import dbget, dbset
+
+lchanid = 1084888069901131897
 
 timeout = 300  # seconds
 
@@ -31,9 +32,8 @@ class ticketbuttonpanel(discord.ui.View):
                        custom_id="Cloe:close")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
-            lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
             logchannel = discord.utils.get(interaction.guild.channels,
-                                           id=lchanid[0])
+                                           id=lchanid)
             if logchannel:
                 transcript = await chat_exporter.export(
                     interaction.channel,
@@ -66,9 +66,8 @@ class ticketbuttonpanel(discord.ui.View):
                     while True:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                 except asyncio.TimeoutError:
-                    lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
                     logchannel = discord.utils.get(interaction.guild.channels,
-                                                   id=lchanid[0])
+                                                   id=lchanid)
                     if logchannel:
                         transcript = await chat_exporter.export(
                             interaction.channel,
@@ -100,7 +99,7 @@ class ticketbutton(discord.ui.View):
     async def gray_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         try:
             existticket = discord.utils.get(interaction.guild.channels,
-                                            name=f"ticket-{interaction.user.name.lower()}{interaction.user.discriminator}")
+                                            name=f"ticket-{interaction.user.name.lower()}")
             if existticket:
                 await interaction.response.send_message(
                     content=f"You already have an existing ticket you silly goose. {existticket.mention}",
@@ -113,7 +112,7 @@ class ticketbutton(discord.ui.View):
                 ticketcat = discord.utils.get(interaction.guild.categories, name="Tickets")
                 if ticketcat:
                     ticketchan = await interaction.guild.create_text_channel(
-                        f"ticket-{interaction.user.name}{interaction.user.discriminator}", category=ticketcat,
+                        f"ticket-{interaction.user.name}", category=ticketcat,
                         overwrites=overwrites)
                     await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
                                                             ephemeral=True)
@@ -129,9 +128,8 @@ class ticketbutton(discord.ui.View):
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                     except asyncio.TimeoutError:
-                        lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid[0])
+                                                       id=lchanid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,
@@ -150,7 +148,7 @@ class ticketbutton(discord.ui.View):
 
                 else:
                     ticketchan = await interaction.guild.create_text_channel(
-                        f"ticket-{interaction.user.name}{interaction.user.discriminator}", overwrites=overwrites)
+                        f"ticket-{interaction.user.name}", overwrites=overwrites)
                     await interaction.response.send_message(content=f"Ticket created in {ticketchan.mention}!",
                                                             ephemeral=True)
                     await ticketchan.send(
@@ -165,9 +163,8 @@ class ticketbutton(discord.ui.View):
                     try:
                         msg = await interaction.client.wait_for('message', check=check, timeout=timeout)
                     except asyncio.TimeoutError:
-                        lchanid = await dbget(interaction.guild.id, interaction.client.user.name, "ticketchannelid")
                         logchannel = discord.utils.get(interaction.guild.channels,
-                                                       id=lchanid[0])
+                                                       id=lchanid)
                         if logchannel:
                             transcript = await chat_exporter.export(
                                 ticketchan,
@@ -188,7 +185,8 @@ class ticketbutton(discord.ui.View):
 
 def ticketmessageembed(bot):
     embed = discord.Embed(title="**Tickets**",
-                          description=f"If you are interested in my services, or need help with an existing one, click the button below!",
+                          description=f"If you are interested in my services, or need help with an existing one, "
+                                      f"click the button below!",
                           color=discord.Color.blue(),
                           timestamp=datetime.datetime.now())
     embed.set_author(name=bot.user.name, icon_url=bot.user.avatar)
@@ -208,33 +206,6 @@ class ticketcmd(commands.Cog):
         except Exception as e:
             print(e)
 
-    @commands.has_permissions(manage_roles=True)
-    @app_commands.guilds(botsdiscord)
-    @app_commands.command(name="setticketchannel", description="Command used by admin to set the ticket log channel.")
-    async def setticketchannel(self, interaction: discord.Interaction, channel: discord.TextChannel) -> None:
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", channel.id)
-            await interaction.response.send_message(
-                f"Your ticket log channel has been set to {discord.utils.get(interaction.guild.channels, id=channel.id)}.",
-                ephemeral=True)
-
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
-    @app_commands.checks.has_permissions(manage_channels=True)
-    @app_commands.guilds(botsdiscord)
-    @app_commands.command(name="resetticketchannel", description="Command used by admin to reset the ticket log channel.")
-    async def resetmessagechannel(self, interaction: discord.Interaction):
-        try:
-            await dbset(interaction.guild.id, self.bot.user.name, "ticketchannelid", 0)
-            await interaction.response.send_message(f"Message log channel config has been reset.", ephemeral=True)
-        except Exception as e:
-            print(e)
-            await interaction.response.send_message(content=f"""Something went wrong.""", ephemeral=True)
-
-    @setticketchannel.error
-    @resetmessagechannel.error
     @ticket.error
     async def onerror(self, interaction: discord.Interaction, error: app_commands.MissingPermissions):
         await interaction.response.send_message(content=error,

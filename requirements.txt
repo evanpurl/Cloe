@@ -1,5 +1,3 @@
 discord.py
-mysql-connector-python~=8.0.32
-requests
-dpy-http-server
 chat_exporter
+python-dotenv

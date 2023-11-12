@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from util.accessutils import whohasaccess
 
 
 class bcommands(commands.Cog):
@@ -8,19 +7,17 @@ class bcommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.is_owner()
     @commands.command(name="sync", description="Command to sync slash commands")
     async def reload(self, ctx) -> None:
         tagged = ctx.message.mentions
         if tagged[0].id == self.bot.user.id:
-            if await whohasaccess(ctx.message.author.id):
-                print(f"Syncing commands")
-                await self.bot.tree.sync()
-                await self.bot.tree.sync(guild=discord.Object(id=1081357638954123276))
-                await self.bot.tree.sync(guild=discord.Object(id=955962668756385792))
-                await ctx.send(f"Commands synced")
-                print(f"Commands synced")
-            else:
-                await ctx.send(f"You can't run this command.")
+            print(f"Syncing commands")
+            await self.bot.tree.sync()
+            await self.bot.tree.sync(guild=discord.Object(id=1081357638954123276))
+            await self.bot.tree.sync(guild=discord.Object(id=955962668756385792))
+            await ctx.send(f"Commands synced")
+            print(f"Commands synced")
 
 
 async def setup(bot):
